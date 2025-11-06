@@ -1,0 +1,16 @@
+fileFormatVersion: 2
+guid: 2be24ba8d593e4e7384e7cde58a746f0
+MonoImporter:
+  externalObjects: {}
+  serializedVersion: 2
+  defaultReferences:
+  - emptyMat: {fileID: 2100000, guid: 3c78de3452d184a5ba6292b94eb7ccbb, type: 2}
+  - clickableTeamAMat: {fileID: 2100000, guid: 9fc4469982eaa4e5da4ad25261d9a606, type: 2}
+  - clickableTeamBMat: {fileID: 2100000, guid: 2adb12d8feec745ad800155313beff10, type: 2}
+  - clickedTeamAMat: {fileID: 2100000, guid: 9fc4469982eaa4e5da4ad25261d9a606, type: 2}
+  - clickedTeamBMat: {fileID: 2100000, guid: 1ca97e4fe59c44902aa3bfdd55b785d2, type: 2}
+  executionOrder: 0
+  icon: {instanceID: 0}
+  userData: 
+  assetBundleName: 
+  assetBundleVariant: 

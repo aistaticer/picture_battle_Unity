@@ -1,0 +1,16 @@
+[
+  {
+    "userName": "Alice",
+    "teamName": "Red",
+    "userId": "player001",
+    "modelType": "Ghost",
+		"position": { "x": 4, "y": 0, "z": 6 }
+  },
+  {
+    "userName": "Bob",
+    "teamName": "Blue",
+    "userId": "player002",
+    "modelType": "Cube",
+		"position": { "x": 6, "y": 0, "z": 3 }
+  }
+]

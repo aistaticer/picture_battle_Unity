@@ -1,0 +1,23 @@
+{
+    "name": "GameComposition",
+    "rootNamespace": "",
+    "references": [
+        "GUID:f1fa75a05d3a74e3c8e877028f2347b0",
+        "GUID:0d8beb7f090555447a6cf5ce9e54dbb4",
+        "GUID:b502ef0ba474c4ef8a9afbd5ae504542",
+        "GUID:3ab657dd52dde444d941a507748f2948",
+        "GUID:7fc456e9fa90e4f14ba819f2dffcea51",
+        "GUID:fdb89237b12ce42b7b672c3d0a4be540",
+        "GUID:e6507552c56374316b0b9154cf5be21a",
+        "GUID:5759d7be0a62242adb2ad8289d78656b"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
