@@ -22,9 +22,7 @@ namespace CameraSystem
         private GameObject subCamera;
 
         CameraSystemContext _cameraSystemContext;
-
-
-
+        
         [Inject]
         public void Construct(DiContainer diContainer)
         {

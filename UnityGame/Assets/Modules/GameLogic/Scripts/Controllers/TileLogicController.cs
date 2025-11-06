@@ -6,19 +6,19 @@ using UnityEngine;
 using picture_game_view.Assets.Modules.Shared.helper;
 using Zenject;
 
-namespace picture_game_view.Assets.Modules.GameLogic.Scripts.Controllers
-{
-    public class TileLogicController : MonoBehaviour 
-    {
+// namespace picture_game_view.Assets.Modules.GameLogic.Scripts.Controllers
+// {
+//     public class TileLogicController : MonoBehaviour 
+//     {
         
-        void Update()
-		{
-			if (RayCastHelper.GetRaycastByClick() is not null)
-            {
-                highlighter.OnTileClicked();
-            }
+//         void Update()
+// 		{
+// 			if (RayCastHelper.GetRaycastByClick() is not null)
+//             {
+//                 highlighter.OnTileClicked();
+//             }
 
-		}
+// 		}
         
-    }
-}
+//     }
+// }

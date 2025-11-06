@@ -13,4 +13,4 @@ MonoBehaviour:
   m_Name: CameraObjSet
   m_EditorClassIdentifier: 
   _mainCamera: {fileID: 5716781325403595733, guid: a57566249624e45019c872817cd1ec38, type: 3}
-  _subCamera: {fileID: 0}
+  _subCamera: {fileID: 5716781325403595733, guid: e5911e909bd8942abb415fc51a94ad26, type: 3}
