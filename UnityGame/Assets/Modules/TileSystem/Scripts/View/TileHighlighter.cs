@@ -13,6 +13,10 @@ public class TileHighlighter : MonoBehaviour
 	[SerializeField]
 	public TileMaterialSet TileMatSet;
 
+	/// <summary>
+	/// アタッチされるtile
+	/// </summary>
+	/// <value></value>
 	public Tile tile { get; private set; }
 
 	private void Awake()
@@ -20,6 +24,10 @@ public class TileHighlighter : MonoBehaviour
 		renderer = GetComponent<Renderer>();
 	}
 
+	/// <summary>
+	/// TileとTileHighlighterを結びつける
+	/// </summary>
+	/// <param name="addTile"></param>
 	internal void Bind(Tile addTile)
 	{
 		tile = addTile;

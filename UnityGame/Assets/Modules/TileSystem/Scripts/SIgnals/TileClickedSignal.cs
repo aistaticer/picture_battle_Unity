@@ -2,10 +2,10 @@
 
 public class TileClickedSignal
 {
-    public Tile Tile { get; }
+    public TileHighlighter TileHighlighter { get; }
 
-    public TileClickedSignal(Tile tile)
+    public TileClickedSignal(TileHighlighter tileHighlighter)
     {
-        Tile = tile;
+        TileHighlighter = tileHighlighter;
     }
 }

@@ -6,6 +6,8 @@ using picture_game_view.Assets.Modules.GameLogic.Scripts;
 using Zenject;
 using UnityEngine;
 using picture_game_view.Assets.Modules.Shared;
+using picture_game_view.Assets.Modules.GameLogic.Scripts.Controllers;
+using UnityGame.Assets.Modules.GameLogic.Scripts.Controllers;
 
 public class GameLogicInstaller : MonoInstaller
 {
@@ -14,5 +16,7 @@ public class GameLogicInstaller : MonoInstaller
         InstallerHelper.BindClass<StartUp>(Container);
         InstallerHelper.BindClass<TileSpawner>(Container);
         InstallerHelper.BindMono<MapController>(Container);
+        InstallerHelper.BindClass<TileLogicController>(Container);
+
     }
 }
