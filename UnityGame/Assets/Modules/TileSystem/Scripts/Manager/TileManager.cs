@@ -1,6 +1,7 @@
 using UnityEngine;
 using System;
 using System.Collections.Generic;
+using Codice.Client.BaseCommands.BranchExplorer.Layout;
 
 public class TileManager
 {
@@ -41,12 +42,14 @@ public class TileManager
 	}
 
 	/// <summary>
-	/// TileHighlighterのTileプロパティにTileをバインド
+	/// TileプロパティのTileHighlighterにアタッチされるTileHighlighterを設定
 	/// </summary>
 	/// <param name="tile"></param>
-	public void BindTile(String key,TileHighlighter tileHighlighter )
+	public void BindTile(string key, TileType type,TileHighlighter tileHighlighter )
 	{
-		tileHighlighter.Bind(GetTile(key));
+		var tile = GetTile(key);
+		tile.TileHighlighter = tileHighlighter;
+		tileHighlighter.Bind(key, type);
 	}
 
 	public void SetTileKey(string key,Tile tile)
@@ -112,5 +115,13 @@ public class TileManager
 			return tile.ToData();
 		}
 		return null;
+	}
+
+	public void ChangesetColor(string key, TileType tileType)
+	{
+		if (tileDict.TryGetValue(key, out var tile))
+		{
+			tile.TileHighlighter.Apply(tileType);
+		}
 	}
 }

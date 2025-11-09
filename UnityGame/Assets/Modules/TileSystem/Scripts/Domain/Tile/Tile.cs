@@ -9,6 +9,8 @@ public class Tile
 
 	public Position Pos { get; private set; }
 
+	public TileHighlighter TileHighlighter {get; internal set;}
+
 	
 	
 	public Tile(string key, TileType type, Position pos)

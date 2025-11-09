@@ -43,6 +43,7 @@ public class TileSpawner
         GameObject obj = UnityEngine.Object.Instantiate(NomalTile, pos, Quaternion.identity);
 
         string key = tileData.Key;
+        TileType tileType = tileData.Type;
 
         // 生成されたオブジェクトの名前をユニークにしている
         obj.name = $"Tile_{key}";
@@ -52,6 +53,6 @@ public class TileSpawner
 
         _tileManager.RegisterTile(_tileManager.CreateFromTileData(tileData));
 
-        _tileManager.BindTile(key, view);
+        _tileManager.BindTile(key, tileType,view);
     }
 }

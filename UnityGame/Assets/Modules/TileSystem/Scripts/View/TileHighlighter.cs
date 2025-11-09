@@ -17,7 +17,7 @@ public class TileHighlighter : MonoBehaviour
 	/// アタッチされるtile
 	/// </summary>
 	/// <value></value>
-	public Tile tile { get; private set; }
+	public string TileKey { get; private set; }
 
 	private void Awake()
 	{
@@ -28,14 +28,14 @@ public class TileHighlighter : MonoBehaviour
 	/// TileとTileHighlighterを結びつける
 	/// </summary>
 	/// <param name="addTile"></param>
-	internal void Bind(Tile addTile)
+	internal void Bind(String key, TileType type)
 	{
-		tile = addTile;
-		Apply(tile.Type);
+		TileKey = key;
+		Apply(type);
 	}
 
 
-	public void Apply(TileType type)
+	internal void Apply(TileType type)
 	{
 		switch (type)
 		{
