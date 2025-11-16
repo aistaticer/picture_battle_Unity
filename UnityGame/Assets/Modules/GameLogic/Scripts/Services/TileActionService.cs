@@ -34,6 +34,9 @@ public class TileActionService
 		}
 	}
 
+	/// <summary>
+	/// タイルがクリックされた場合その四方のタイルがクリック可能状態になるため、それらのタイルをListに入れて返す
+	/// </summary>
 	private List<TileData> CreateUpdateTileDatas(Tile selectTile)
 	{
 			List<TileData> updateTileDatas = new List<TileData>();
@@ -43,7 +46,7 @@ public class TileActionService
 				// 状態を Clicked に更新されたTileDataをListに格納
 				_tileManager.UpdateTileType(selectTile.Key, TileType.clickedTeamA);
 				var copiedTileData = _tileManager.GetTileData(selectTile.Key);
-				var updatedTileData = new TileData(copiedTileData.Key, TileType.clickedTeamA, copiedTileData.Position);
+				var updatedTileData = new TileData(copiedTileData.Key, TileType.clickedTeamA, copiedTileData.Position, copiedTileData.UserId);
 				updateTileDatas.Add(updatedTileData);
 
 				string adjacentKey = null;
@@ -58,7 +61,7 @@ public class TileActionService
 					copiedTileData = _tileManager.GetTileData(adjacentKey);
 					if (copiedTileData != null && copiedTileData.Type != TileType.clickedTeamA)
 					{
-						updatedTileData = new TileData(copiedTileData.Key, TileType.clickableTeamA, copiedTileData.Position);
+						updatedTileData = new TileData(copiedTileData.Key, TileType.clickableTeamA, copiedTileData.Position, copiedTileData.UserId);
 						updateTileDatas.Add(updatedTileData);
 					}
 				}

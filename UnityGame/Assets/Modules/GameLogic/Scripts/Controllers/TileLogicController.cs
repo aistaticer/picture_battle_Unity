@@ -30,9 +30,11 @@ namespace picture_game_view.Assets.Modules.GameLogic.Scripts.Controllers
             // ここでゲームルールに従って状態を変える（移動可能判定、選択状態更新等）
             var tileKey = signal.TileHighlighter.TileKey;
 
-            _tileManager.ChangesetColor(tileKey, TileType.clickableTeamA);
-
-            Debug.Log(tileKey);
+			if (_tileManager.GetTileData(tileKey).UserId == "player001")
+			{
+                _tileManager.ChangesetColor(tileKey, TileType.clickableTeamA);
+			}
+            Debug.Log(_tileManager.GetTileData(tileKey).UserId);
             // 例: service.DoSomething(tile);
         }
 

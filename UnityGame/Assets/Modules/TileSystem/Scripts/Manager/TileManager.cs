@@ -21,8 +21,6 @@ public class TileManager
 	{
 		if (!tileDict.ContainsKey(tile.Key))
 		{
-			// この行いらんかも
-			// tile.SetData(tile.Key, tile.Type);
 			tileDict.Add(tile.Key, tile);
 		}
 	}
@@ -65,6 +63,17 @@ public class TileManager
 		if (tileDict.TryGetValue(key, out var tile))
 		{
 			tile.SetState(key, newType);
+		}
+	}
+
+	/// <summary>
+	/// 指定されたキーのタイルのUserIdを更新する
+	/// </summary>
+	public void UpdateUserId(string key, string userId)
+	{
+		if (tileDict.TryGetValue(key, out var tile))
+		{
+			tile.UserId = userId;
 		}
 	}
 

@@ -52,6 +52,7 @@ public class TileSpawner
         var view = obj.GetComponent<TileHighlighter>();
 
         _tileManager.RegisterTile(_tileManager.CreateFromTileData(tileData));
+        _tileManager.UpdateUserId(key,tileData.UserId);
 
         _tileManager.BindTile(key, tileType,view);
     }

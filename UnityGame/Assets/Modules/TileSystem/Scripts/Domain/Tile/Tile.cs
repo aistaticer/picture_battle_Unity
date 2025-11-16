@@ -9,16 +9,25 @@ public class Tile
 
 	public Position Pos { get; private set; }
 
+	internal string UserId { get; set; }
+
 	public TileHighlighter TileHighlighter {get; internal set;}
 
-	
-	
 	public Tile(string key, TileType type, Position pos)
 	{
 		Key = key;
 		Type = type;
 		Pos = pos;
 	}
+
+	  public bool CanClick(string userId)
+		{
+			if(UserId == userId){
+				return true;
+			}
+
+			return false;
+		}
 
 	internal void SetType(TileType newType)
 	{
@@ -38,14 +47,12 @@ public class Tile
 
 	/// <summary>
 	/// 状態を更新するメソッド
-	/// 盤状の見た目もフィールド変数も更新する
 	/// </summary>
 	internal void SetState(string key, TileType type,Position pos)
 	{
 		Key = key;
 		Type = type;
 		Pos = pos;
-		//Initialize(type);
 	}
 
 	/// <summary>
@@ -69,6 +76,6 @@ public class Tile
 	
 	internal TileData ToData()
 	{
-		return new TileData(this.Key, this.Type, this.Pos);
+		return new TileData(this.Key, this.Type, this.Pos, this.UserId);
 	}
 }
