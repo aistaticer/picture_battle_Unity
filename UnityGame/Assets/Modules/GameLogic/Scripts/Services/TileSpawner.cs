@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using picture_game_view.Assets.Modules.TileSystem.Configs;
 using Zenject;
 using System;
+using UnityGame.Assets.Modules.TileSystem.Scripts.Domain.Tile;
 
 public class TileSpawner
 {
@@ -18,12 +19,14 @@ public class TileSpawner
     }
 
     // タイル配置メソッド
-    public void SpawnTiles(Dictionary<string, TileData> tiles)
+    public void SpawnTiles(Dictionary<string, TileData> tiles, Dictionary<string, string> ownerRelation)
     {
         foreach (var entry in tiles)
         {
             TileData tileData = entry.Value;
             generateTile(tileData);
+
+            _tileManager.SetOwnerInfo(ownerRelation);
         }
     }
 
@@ -52,7 +55,6 @@ public class TileSpawner
         var view = obj.GetComponent<TileHighlighter>();
 
         _tileManager.RegisterTile(_tileManager.CreateFromTileData(tileData));
-        _tileManager.UpdateUserId(key,tileData.UserId);
 
         _tileManager.BindTile(key, tileType,view);
     }

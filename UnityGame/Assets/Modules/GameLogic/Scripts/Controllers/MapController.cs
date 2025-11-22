@@ -20,6 +20,6 @@ public class MapController : MonoBehaviour
             return;
         }
 
-        Spawner.SpawnTiles(root.board.tiles);
+        Spawner.SpawnTiles(root.board.tiles, root.ownerRelation);
     }
 }

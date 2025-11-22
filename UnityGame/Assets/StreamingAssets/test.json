@@ -6,13 +6,63 @@
 		"TeamA",
 		"TeamB"
 	],
+	"ownerRelation": {
+    "0-0-0": "testId",
+    "0-0-1": "userB",
+    "0-0-2": "userB",
+    "0-0-3": "userB",
+    "0-0-4": "userB",
+    "0-0-5": "userB",
+    "0-0-6": "userB",
+		"1-0-0": "testId",
+    "1-0-1": "userB",
+    "1-0-2": "userB",
+    "1-0-3": "userB",
+    "1-0-4": "userB",
+    "1-0-5": "userB",
+    "1-0-6": "userB",
+		"2-0-0": "testId",
+    "2-0-1": "userB",
+    "2-0-2": "userB",
+    "2-0-3": "userB",
+    "2-0-4": "userB",
+    "2-0-5": "userB",
+    "2-0-6": "userB",
+		"3-0-0": "testId",
+    "3-0-1": "userB",
+    "3-0-2": "userB",
+    "3-0-3": "userB",
+    "3-0-4": "testId",
+    "3-0-5": "userB",
+    "3-0-6": "userB",		
+		"4-0-0": "testId",
+    "4-0-1": "userB",
+    "4-0-2": "userB",
+    "4-0-3": "userB",
+    "4-0-4": "userB",
+    "4-0-5": "userB",
+    "4-0-6": "userB",	
+		"5-0-0": "testId",
+    "5-0-1": "userB",
+    "5-0-2": "userB",
+    "5-0-3": "userB",
+    "5-0-4": "userB",
+    "5-0-5": "userB",
+    "5-0-6": "userB",
+		"6-0-0": "testId",
+    "6-0-1": "userB",
+    "6-0-2": "userB",
+    "6-0-3": "userB",
+    "6-0-4": "userB",
+    "6-0-5": "userB",
+    "6-0-6": "userB"
+  },
 	"board": {
 		"boardId": "board1",
 		"tiles": {
 			"0-0-3": {
 				"key": "0-0-3",
 				"type": "empty",
-				"userId":"player002",
 				"position": {
 					"x": 0,
 					"y": 0,
@@ -22,7 +72,6 @@
 			"0-0-2": {
 				"key": "0-0-2",
 				"type": "empty",
-				"userId":"player001",
 				"position": {
 					"x": 0,
 					"y": 0,
@@ -32,7 +81,6 @@
 			"0-0-5": {
 				"key": "0-0-5",
 				"type": "empty",
-				"userId":"player001",
 				"position": {
 					"x": 0,
 					"y": 0,
@@ -42,7 +90,6 @@
 			"0-0-4": {
 				"key": "0-0-4",
 				"type": "empty",
-				"userId":"player001",
 				"position": {
 					"x": 0,
 					"y": 0,
@@ -52,7 +99,6 @@
 			"0-0-6": {
 				"key": "0-0-6",
 				"type": "empty",
-				"userId":"player001",
 				"position": {
 					"x": 0,
 					"y": 0,
@@ -62,7 +108,6 @@
 			"0-0-1": {
 				"key": "0-0-1",
 				"type": "empty",
-				"userId":"player001",
 				"position": {
 					"x": 0,
 					"y": 0,
@@ -71,8 +116,7 @@
 			},
 			"0-0-0": {
 				"key": "0-0-0",
-				"type": "empty",
-				"userId":"player001",
+				"type": "clickableTeamA",
 				"position": {
 					"x": 0,
 					"y": 0,
@@ -81,8 +125,7 @@
 			},
 			"6-0-2": {
 				"key": "6-0-2",
-				"type": "clickedTeamA",
-				"userId":"player001",
+				"type": "empty",
 				"position": {
 					"x": 6,
 					"y": 0,
@@ -91,8 +134,7 @@
 			},
 			"6-0-3": {
 				"key": "6-0-3",
-				"type": "clickedTeamB",
-				"userId":"player001",
+				"type": "empty",
 				"position": {
 					"x": 6,
 					"y": 0,
@@ -101,8 +143,7 @@
 			},
 			"4-0-6": {
 				"key": "4-0-6",
-				"type": "clickedTeamA",
-				"userId":"player001",
+				"type": "empty",
 				"position": {
 					"x": 4,
 					"y": 0,
@@ -111,8 +152,7 @@
 			},
 			"6-0-0": {
 				"key": "6-0-0",
-				"type": "empty",
-				"userId":"player001",
+				"type": "clickableTeamA",
 				"position": {
 					"x": 6,
 					"y": 0,
@@ -122,7 +162,6 @@
 			"6-0-1": {
 				"key": "6-0-1",
 				"type": "empty",
-				"userId":"player001",
 				"position": {
 					"x": 6,
 					"y": 0,
@@ -131,8 +170,7 @@
 			},
 			"5-0-0": {
 				"key": "5-0-0",
-				"type": "empty",
-				"userId":"player001",
+				"type": "clickableTeamA",
 				"position": {
 					"x": 5,
 					"y": 0,
@@ -142,7 +180,6 @@
 			"5-0-1": {
 				"key": "5-0-1",
 				"type": "empty",
-				"userId":"player001",
 				"position": {
 					"x": 5,
 					"y": 0,
@@ -152,7 +189,6 @@
 			"5-0-2": {
 				"key": "5-0-2",
 				"type": "empty",
-				"userId":"player001",
 				"position": {
 					"x": 5,
 					"y": 0,
@@ -162,7 +198,6 @@
 			"5-0-3": {
 				"key": "5-0-3",
 				"type": "empty",
-				"userId":"player001",
 				"position": {
 					"x": 5,
 					"y": 0,
@@ -172,7 +207,6 @@
 			"5-0-4": {
 				"key": "5-0-4",
 				"type": "empty",
-				"userId":"player001",
 				"position": {
 					"x": 5,
 					"y": 0,
@@ -182,7 +216,6 @@
 			"5-0-5": {
 				"key": "5-0-5",
 				"type": "empty",
-				"userId":"player001",
 				"position": {
 					"x": 5,
 					"y": 0,
@@ -192,7 +225,6 @@
 			"5-0-6": {
 				"key": "5-0-6",
 				"type": "empty",
-				"userId":"player001",
 				"position": {
 					"x": 5,
 					"y": 0,
@@ -202,7 +234,6 @@
 			"4-0-1": {
 				"key": "4-0-1",
 				"type": "empty",
-				"userId":"player001",
 				"position": {
 					"x": 4,
 					"y": 0,
@@ -211,8 +242,7 @@
 			},
 			"4-0-0": {
 				"key": "4-0-0",
-				"type": "empty",
-				"userId":"player001",
+				"type": "clickableTeamA",
 				"position": {
 					"x": 4,
 					"y": 0,
@@ -222,7 +252,6 @@
 			"4-0-3": {
 				"key": "4-0-3",
 				"type": "empty",
-				"userId":"player001",
 				"position": {
 					"x": 4,
 					"y": 0,
@@ -232,7 +261,6 @@
 			"6-0-6": {
 				"key": "6-0-6",
 				"type": "empty",
-				"userId":"player001",
 				"position": {
 					"x": 6,
 					"y": 0,
@@ -242,7 +270,6 @@
 			"4-0-2": {
 				"key": "4-0-2",
 				"type": "empty",
-				"userId":"player001",
 				"position": {
 					"x": 4,
 					"y": 0,
@@ -252,7 +279,6 @@
 			"6-0-4": {
 				"key": "6-0-4",
 				"type": "empty",
-				"userId":"player001",
 				"position": {
 					"x": 6,
 					"y": 0,
@@ -262,7 +288,6 @@
 			"4-0-5": {
 				"key": "4-0-5",
 				"type": "empty",
-				"userId":"player001",
 				"position": {
 					"x": 4,
 					"y": 0,
@@ -272,7 +297,6 @@
 			"4-0-4": {
 				"key": "4-0-4",
 				"type": "empty",
-				"userId":"player001",
 				"position": {
 					"x": 4,
 					"y": 0,
@@ -281,8 +305,7 @@
 			},
 			"6-0-5": {
 				"key": "6-0-5",
-				"type": "clickedTeamA",
-				"userId":"player001",
+				"type": "empty",
 				"position": {
 					"x": 6,
 					"y": 0,
@@ -291,8 +314,7 @@
 			},
 			"3-0-2": {
 				"key": "3-0-2",
-				"type": "clickedTeamA",
-				"userId":"player001",
+				"type": "empty",
 				"position": {
 					"x": 3,
 					"y": 0,
@@ -302,7 +324,6 @@
 			"3-0-1": {
 				"key": "3-0-1",
 				"type": "empty",
-				"userId":"player001",
 				"position": {
 					"x": 3,
 					"y": 0,
@@ -311,8 +332,7 @@
 			},
 			"3-0-0": {
 				"key": "3-0-0",
-				"type": "clickedTeamA",
-				"userId":"player001",
+				"type": "clickableTeamA",
 				"position": {
 					"x": 3,
 					"y": 0,
@@ -322,7 +342,6 @@
 			"3-0-6": {
 				"key": "3-0-6",
 				"type": "empty",
-				"userId":"player001",
 				"position": {
 					"x": 3,
 					"y": 0,
@@ -331,8 +350,7 @@
 			},
 			"3-0-5": {
 				"key": "3-0-5",
-				"type": "clickedTeamA",
-				"userId":"player001",
+				"type": "empty",
 				"position": {
 					"x": 3,
 					"y": 0,
@@ -341,8 +359,7 @@
 			},
 			"3-0-4": {
 				"key": "3-0-4",
-				"type": "empty",
-				"userId":"player001",
+				"type": "clickableTeamA",
 				"position": {
 					"x": 3,
 					"y": 0,
@@ -352,7 +369,6 @@
 			"3-0-3": {
 				"key": "3-0-3",
 				"type": "empty",
-				"userId":"player001",
 				"position": {
 					"x": 3,
 					"y": 0,
@@ -362,7 +378,6 @@
 			"2-0-5": {
 				"key": "2-0-5",
 				"type": "empty",
-				"userId":"player001",
 				"position": {
 					"x": 2,
 					"y": 0,
@@ -372,7 +387,6 @@
 			"2-0-4": {
 				"key": "2-0-4",
 				"type": "empty",
-				"userId":"player001",
 				"position": {
 					"x": 2,
 					"y": 0,
@@ -382,7 +396,6 @@
 			"2-0-6": {
 				"key": "2-0-6",
 				"type": "empty",
-				"userId":"player001",
 				"position": {
 					"x": 2,
 					"y": 0,
@@ -392,7 +405,6 @@
 			"2-0-1": {
 				"key": "2-0-1",
 				"type": "empty",
-				"userId":"player001",
 				"position": {
 					"x": 2,
 					"y": 0,
@@ -401,8 +413,7 @@
 			},
 			"2-0-0": {
 				"key": "2-0-0",
-				"type": "empty",
-				"userId":"player001",
+				"type": "clickableTeamA",
 				"position": {
 					"x": 2,
 					"y": 0,
@@ -412,7 +423,6 @@
 			"2-0-3": {
 				"key": "2-0-3",
 				"type": "empty",
-				"userId":"player001",
 				"position": {
 					"x": 2,
 					"y": 0,
@@ -421,8 +431,7 @@
 			},
 			"2-0-2": {
 				"key": "2-0-2",
-				"type": "clickedTeamA",
-				"userId":"player002",
+				"type": "empty",
 				"position": {
 					"x": 2,
 					"y": 0,
@@ -431,8 +440,7 @@
 			},
 			"1-0-0": {
 				"key": "1-0-0",
-				"type": "empty",
-				"userId":"player002",
+				"type": "clickableTeamA",
 				"position": {
 					"x": 1,
 					"y": 0,
@@ -442,7 +450,6 @@
 			"1-0-6": {
 				"key": "1-0-6",
 				"type": "empty",
-				"userId":"player002",
 				"position": {
 					"x": 1,
 					"y": 0,
@@ -452,7 +459,6 @@
 			"1-0-5": {
 				"key": "1-0-5",
 				"type": "empty",
-				"userId":"player002",
 				"position": {
 					"x": 1,
 					"y": 0,
@@ -462,7 +468,6 @@
 			"1-0-4": {
 				"key": "1-0-4",
 				"type": "empty",
-				"userId":"player002",
 				"position": {
 					"x": 1,
 					"y": 0,
@@ -472,7 +477,6 @@
 			"1-0-3": {
 				"key": "1-0-3",
 				"type": "empty",
-				"userId":"player002",
 				"position": {
 					"x": 1,
 					"y": 0,
@@ -482,7 +486,6 @@
 			"1-0-2": {
 				"key": "1-0-2",
 				"type": "empty",
-				"userId":"player002",
 				"position": {
 					"x": 1,
 					"y": 0,
@@ -492,7 +495,6 @@
 			"1-0-1": {
 				"key": "1-0-1",
 				"type": "empty",
-				"userId":"player002",
 				"position": {
 					"x": 1,
 					"y": 0,

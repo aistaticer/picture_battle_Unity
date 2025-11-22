@@ -9,8 +9,6 @@ public class Tile
 
 	public Position Pos { get; private set; }
 
-	internal string UserId { get; set; }
-
 	public TileHighlighter TileHighlighter {get; internal set;}
 
 	public Tile(string key, TileType type, Position pos)
@@ -19,15 +17,6 @@ public class Tile
 		Type = type;
 		Pos = pos;
 	}
-
-	  public bool CanClick(string userId)
-		{
-			if(UserId == userId){
-				return true;
-			}
-
-			return false;
-		}
 
 	internal void SetType(TileType newType)
 	{
@@ -76,6 +65,6 @@ public class Tile
 	
 	internal TileData ToData()
 	{
-		return new TileData(this.Key, this.Type, this.Pos, this.UserId);
+		return new TileData(this.Key, this.Type, this.Pos);
 	}
 }

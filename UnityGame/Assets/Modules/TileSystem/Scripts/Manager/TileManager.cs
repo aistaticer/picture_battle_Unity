@@ -1,6 +1,7 @@
 using UnityEngine;
 using System;
 using System.Collections.Generic;
+using UnityGame.Assets.Modules.TileSystem.Scripts.Domain.Tile;
 using Codice.Client.BaseCommands.BranchExplorer.Layout;
 
 public class TileManager
@@ -12,6 +13,16 @@ public class TileManager
 	/// <typeparam name="Tile"></typeparam>
 	/// <returns></returns>
 	private Dictionary<string, Tile> tileDict = new Dictionary<string, Tile>();
+
+	/// <summary>
+	/// UserIdとTileOwner（所有タイル群）を紐付けた辞書型
+	/// </summary>
+	/// <typeparam name="string"></typeparam>
+	/// <typeparam name="TileOwner"></typeparam>
+	/// <returns></returns>
+	private Dictionary<string, string> OwnerDict = new Dictionary<string, string>();
+
+
 
 	/// <summary>
 	/// プロパティにあるDictionaryにタイルを登録
@@ -63,17 +74,6 @@ public class TileManager
 		if (tileDict.TryGetValue(key, out var tile))
 		{
 			tile.SetState(key, newType);
-		}
-	}
-
-	/// <summary>
-	/// 指定されたキーのタイルのUserIdを更新する
-	/// </summary>
-	public void UpdateUserId(string key, string userId)
-	{
-		if (tileDict.TryGetValue(key, out var tile))
-		{
-			tile.UserId = userId;
 		}
 	}
 
@@ -132,5 +132,44 @@ public class TileManager
 		{
 			tile.TileHighlighter.Apply(tileType);
 		}
+	}
+
+	/// <summary>
+	/// 所有者関係情報をOwnerDictに登録。
+	/// </summary>
+	/// <param name="tileOwner">登録する所有者情報</param>
+	public void SetOwnerInfo(Dictionary<string, string> ownerRelation)
+	{
+		if (ownerRelation != null)
+		{
+			OwnerDict = ownerRelation;
+		}
+	}
+
+	/// <summary>
+	/// 指定したユーザーが所有する特定のタイルのデータを更新します。
+	/// </summary>
+	/// <param name="updateTileKey">タイルのキー</param>
+		/// <param name="updateUserId">更新するUserId</param>
+	public void UpdateOwnedTileData(string updateTileKey, string updateUserId)
+	{
+		if (string.IsNullOrEmpty(updateUserId) || updateTileKey == null) return;
+
+		if (OwnerDict.ContainsKey(updateTileKey))
+		{
+			OwnerDict[updateTileKey] = updateUserId;
+		}
+	}
+
+
+	/// <summary>
+	/// 指定したユーザーの所有者情報を取得します。
+	/// </summary>
+	/// <param name="userId">所有者のID</param>
+	/// <returns>見つかった場合はTileOwner、見つからない場合はnull</returns>
+	public string GetOwnerInfo(string tileKey)
+	{
+		OwnerDict.TryGetValue(tileKey, out var userId);
+		return userId;
 	}
 }

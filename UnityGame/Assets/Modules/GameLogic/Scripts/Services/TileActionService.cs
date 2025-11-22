@@ -46,7 +46,7 @@ public class TileActionService
 				// 状態を Clicked に更新されたTileDataをListに格納
 				_tileManager.UpdateTileType(selectTile.Key, TileType.clickedTeamA);
 				var copiedTileData = _tileManager.GetTileData(selectTile.Key);
-				var updatedTileData = new TileData(copiedTileData.Key, TileType.clickedTeamA, copiedTileData.Position, copiedTileData.UserId);
+				var updatedTileData = new TileData(copiedTileData.Key, TileType.clickedTeamA, copiedTileData.Position);
 				updateTileDatas.Add(updatedTileData);
 
 				string adjacentKey = null;
@@ -61,7 +61,7 @@ public class TileActionService
 					copiedTileData = _tileManager.GetTileData(adjacentKey);
 					if (copiedTileData != null && copiedTileData.Type != TileType.clickedTeamA)
 					{
-						updatedTileData = new TileData(copiedTileData.Key, TileType.clickableTeamA, copiedTileData.Position, copiedTileData.UserId);
+						updatedTileData = new TileData(copiedTileData.Key, TileType.clickableTeamA, copiedTileData.Position);
 						updateTileDatas.Add(updatedTileData);
 					}
 				}
