@@ -68,4 +68,98 @@ public class TileActionService
 			}
 				return updateTileDatas;
 	}
+
+	/// <summary>
+	/// 二つの地点の最短経路を導き出す
+	/// </summary>
+	/// <param name="startTileKey"></param>
+	/// <param name="endTileKey"></param>
+	/// <returns></returns>
+	public List<TileData> FindShortestPath(string startTileKey, string endTileKey)
+	{
+		// 探索用のデータ構造
+		var queue = new Queue<TileData>();
+		// 経路復元用: Keyに移動先タイルのキー、Valueにそのタイルへの移動元タイルを格納
+		var cameFrom = new Dictionary<string, TileData>();
+		// 訪問済みタイルを管理
+		var visited = new HashSet<string> { startTileKey };
+
+		queue.Enqueue(_tileManager.GetTileData(startTileKey));
+
+		TileData current = null;
+		bool pathFound = false;
+
+		while (queue.Count > 0)
+		{
+			current = queue.Dequeue();
+
+			if (current.Key == endTileKey)
+			{
+				pathFound = true;
+				break;
+			}
+
+			// 4方向の隣接タイルを調べる
+			foreach (var offset in offsets4)
+			{
+				var adjacentPos = new Position {
+					x = current.Position.x + offset.x,
+					y = current.Position.y + offset.y,
+					z = current.Position.z + offset.z
+				};
+
+				var adjacentKey = $"{adjacentPos.x}-{adjacentPos.y}-{adjacentPos.z}";
+				
+				// 訪問済みならスキップ
+				if (visited.Contains(adjacentKey))
+				{
+					continue;
+				}
+
+				var adjacentTileData = _tileManager.GetTileData(adjacentKey);
+
+				// 隣接タイルが存在し、かつ通行可能かチェック (ルールに合わせて条件を変更してください)
+				if (adjacentTileData != null && adjacentTileData.Type != TileType.clickedTeamA)
+				{
+					visited.Add(adjacentKey);
+					// 目的地タイルから逆算して隣り合ったタイルをvalueに入れている.Keyは移動先タイルのキー(逆算して中身を入れていくため).
+					cameFrom[adjacentTileData.Key] = current;
+					// fifoで中にTIleDataを入れている
+					// ここでは距離順を保持されず、距離順はcameFromがKeyとValueで数珠繋ぎのように保持している
+					queue.Enqueue(adjacentTileData);
+				}
+			}
+		}
+
+		// 経路を復元
+		if (pathFound)
+		{
+			var path = new List<TileData>();
+
+			var currentKey = endTileKey;
+			while (endTileKey != null)
+			{
+					var tile = _tileManager.GetTileData(currentKey);
+					if (tile == null) break;
+
+					path.Add(tile);
+
+					// 親があるなら親キーへ
+					if (cameFrom.ContainsKey(currentKey))
+					{
+							currentKey = cameFrom[currentKey].Key;
+					}
+					else
+					{
+							// 始点に到達
+							break;
+					}
+			}
+
+			path.Reverse();
+			return path;
+		}
+
+		return new List<TileData>(); // 経路が見つからなかった場合
+	}
 }

@@ -12,12 +12,13 @@ namespace picture_game_view.Assets.Modules.GameLogic.Scripts.Controllers
     {
         private readonly SignalBus _signalBus;
         private readonly TileManager _tileManager;
+        private readonly TileActionService _tileActionService;
 
-
-        public TileLogicController(SignalBus signalBus,TileManager tileManager)
+        public TileLogicController(SignalBus signalBus,TileManager tileManager, TileActionService tileActionService)
         {
             _signalBus = signalBus;
             _tileManager = tileManager;
+            _tileActionService = tileActionService;
         }
 
         public void Initialize()
@@ -30,9 +31,17 @@ namespace picture_game_view.Assets.Modules.GameLogic.Scripts.Controllers
             // ここでゲームルールに従って状態を変える（移動可能判定、選択状態更新等）
             var tileKey = signal.TileHighlighter.TileKey;
 
-			if (_tileManager.GetTileData(tileKey).UserId == "player001")
+			// if (_tileManager.GetTileData(tileKey).UserId == "player001")
+            if(true)
 			{
-                _tileManager.ChangesetColor(tileKey, TileType.clickableTeamA);
+                var a = _tileActionService.FindShortestPath(tileKey, "0-0-0");
+
+                foreach (var item in a)
+                {
+                    _tileManager.ChangesetColor(item.Key, TileType.clickableTeamA);
+                }
+
+                //_tileManager.ChangesetColor(tileKey, TileType.clickableTeamA);
 			}
             Debug.Log(_tileManager.GetTileData(tileKey).UserId);
             // 例: service.DoSomething(tile);

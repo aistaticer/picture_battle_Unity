@@ -15,6 +15,7 @@ public class GameLogicInstaller : MonoInstaller
     {
         InstallerHelper.BindClass<StartUp>(Container);
         InstallerHelper.BindClass<TileSpawner>(Container);
+        InstallerHelper.BindClass<TileActionService>(Container);
         InstallerHelper.BindMono<MapController>(Container);
         InstallerHelper.BindClass<TileLogicController>(Container);
 
