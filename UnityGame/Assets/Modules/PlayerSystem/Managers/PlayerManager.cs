@@ -1,59 +1,25 @@
 using UnityEngine;
-using Zenject;
 using System.Collections.Generic;
 
 /// <summary>
 /// ゲーム内のプレイヤー情報を管理
 /// </summary>
-public class PlayerManager : MonoBehaviour
+public class PlayerManager
 {
-	private Movement _movement;
-
-	//private PlayerModelSet _playerModelSet;
-	// 一旦か二番で進める。後ほどAddressablesを用いた都度ダウンロードに切り替える
-	[SerializeField] private PlayerModelSet _playerModelSet;
-
 	private readonly Dictionary<PlayerState, GameObject> _playerObjects
 			= new Dictionary<PlayerState, GameObject>();
 
-	[Inject]
-	public void Construct(Movement movement, PlayerModelSet playerModelSet)
-	{
-		_movement = movement;
-		_playerModelSet = playerModelSet;
-	}
+	// Awake()とConstruct()は削除 - 初期化はPlayerSystemStartUpで行う
 
-	void Awake()
-	{
-		List<PlayerInfoState> playerInfos = JsonLoader.LoadFromStreamingAssets<List<PlayerInfoState>>("player.json");
-		
-		foreach (var info in playerInfos)
-		{
-			// PlayerState を生成
-			PlayerState playerState = new PlayerState(info);
-
-			// モデルを取得して生成
-			GameObject modelPrefab = _playerModelSet.GetModel(playerState.Info.ModelType);
-
-			if (modelPrefab == null)
-			{
-				Debug.LogError($"モデルが見つかりません: ModelType={playerState.Info.ModelType}");
-				return; // または continue;
-			}
-
-			GameObject playerObject = Instantiate(modelPrefab, playerState.Info.Position.ToVector3(), Quaternion.identity);
-
-			// 登録処理
-			RegisterPlayer(playerState, playerObject);
-		}
-	}
-
-	void Update()
-	{
-
-	}
-
-
+	/// <summary>
+	/// 受け取った情報からオブジェクトを生成し、playerのオブジェクトとして配置する
+	/// </summary>
+	/// <param name="info">プレイヤー情報</param>
+	/// <param name="prefab">プレイヤーのオブジェクト</param>
+	/// <param name="position">プレイヤーの位置</param>
+	/// <returns></returns> <summary>
+	/// 
+	/// </summary>
 	public GameObject CreatePlayer(PlayerState info, GameObject prefab, Vector3 position)
 	{
 		var obj = GameObject.Instantiate(prefab, position, Quaternion.identity);
@@ -74,7 +40,36 @@ public class PlayerManager : MonoBehaviour
 		return _playerObjects.TryGetValue(state, out var obj) ? obj : null;
 	}
 
+	/// <summary>
+	/// UserIdに対応するプレイヤーのタイルキー（"x-y-z"形式）を取得
+	/// </summary>
+	public string GetPlayerTileKeyByUserId(string userId)
+	{
+		foreach (var kvp in _playerObjects)
+		{
+			if (kvp.Key.Info.UserId == userId)
+			{
+				var pos = kvp.Key.Info.Position;
+				return $"{pos.x}-{pos.y}-{pos.z}";
+			}
+		}
+		return null;
+	}
 
+	/// <summary>
+	/// UserIdに対応するプレイヤーの現在位置を取得
+	/// </summary>
+	public Vector3? GetPlayerPositionByUserId(string userId)
+	{
+		foreach (var kvp in _playerObjects)
+		{
+			if (kvp.Key.Info.UserId == userId)
+			{
+				return kvp.Value.transform.position;
+			}
+		}
+		return null;
+	}
 
 }
 

@@ -19,11 +19,7 @@ namespace picture_game_view.Assets.Modules.GameLogic.Scripts
         public void Construct(DiContainer diContainer){
             Container = diContainer;
 
-            // SignalBus 自体のバインド
-            SignalBusInstaller.Install(Container);
-
-            // シグナル型の登録
-            Container.DeclareSignal<TileClickedSignal>();
+            // SignalBusとシグナル型の登録はGameLogicInstallerに移動
 
             // Signal購読の紐付け
             // SignalBus の「購読」と「ハンドラメソッド」を結びつける専用構文

@@ -6,6 +6,7 @@ using UnityEngine;
 using picture_game_view.Assets.Modules.Shared.helper;
 using UnityGame.Assets.Modules.UserSystem.Domain;
 using Zenject;
+using UnityGame.Assets.Modules.UserSystem;
 
 namespace picture_game_view.Assets.Modules.GameLogic.Scripts.Controllers
 {
@@ -14,14 +15,14 @@ namespace picture_game_view.Assets.Modules.GameLogic.Scripts.Controllers
         private readonly SignalBus _signalBus;
         private readonly TileManager _tileManager;
         private readonly TileActionService _tileActionService;
-        private readonly UserState _userState;
+        private readonly PlayerManager _playerManager;
 
-        public TileLogicController(SignalBus signalBus,TileManager tileManager, TileActionService tileActionService, UserState userState)
+        public TileLogicController(SignalBus signalBus,TileManager tileManager, TileActionService tileActionService, PlayerManager playerManager)
         {
             _signalBus = signalBus;
             _tileManager = tileManager;
             _tileActionService = tileActionService;
-            _userState = userState;
+            _playerManager = playerManager;
         }
 
         public void Initialize()
@@ -36,11 +37,19 @@ namespace picture_game_view.Assets.Modules.GameLogic.Scripts.Controllers
 
 			if (_tileManager.GetOwnerInfo(tileKey) == "testId")
 			{
-                var a = _tileActionService.FindShortestPath(tileKey, "0-0-0");
+                // Alice (player001)の位置を取得
+                string playerTileKey = _playerManager.GetPlayerTileKeyByUserId("player001");
 
-                foreach (var item in a)
+                if (playerTileKey != null)
                 {
-                    _tileManager.ChangesetColor(item.Key, TileType.clickedTeamA);
+                    // プレイヤーの位置からクリックした位置までの最短経路を取得
+                    var path = _tileActionService.FindShortestPath(playerTileKey, tileKey);
+
+                    // 経路上の全タイルの色を変更
+                    foreach (var item in path)
+                    {
+                        _tileManager.ChangesetColor(item.Key, TileType.clickedTeamA);
+                    }
                 }
 
                 //_tileManager.ChangesetColor(tileKey, TileType.clickableTeamA);

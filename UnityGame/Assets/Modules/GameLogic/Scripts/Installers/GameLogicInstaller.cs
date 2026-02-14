@@ -13,11 +13,19 @@ public class GameLogicInstaller : MonoInstaller
 {
     public override void InstallBindings()
     {
+        Debug.Log("aaaa");
+        // SignalBus 自体のバインド（StartUpから移動）
+        SignalBusInstaller.Install(Container);
+
+        // シグナル型の登録
+        Container.DeclareSignal<TileClickedSignal>();
+
         InstallerHelper.BindClass<StartUp>(Container);
         InstallerHelper.BindClass<TileSpawner>(Container);
         InstallerHelper.BindClass<TileActionService>(Container);
         InstallerHelper.BindMono<MapController>(Container);
         InstallerHelper.BindClass<TileLogicController>(Container);
 
+        // PlayerManagerはPlayerSystemStartUpで動的に生成してバインドされる
     }
 }

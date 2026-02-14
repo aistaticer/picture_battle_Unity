@@ -54,7 +54,7 @@ public class TileActionService
 				for (int i = 0; i < offsets4.Length; i++)
 				{
 					int newX = (int)selectTile.Pos.x + offsets4[i].x;
-					int newY = (int)selectTile.Pos.y + offsets4[i].y; // 今回は常に同じ
+					int newY = (int)selectTile.Pos.y + offsets4[i].y;
 					int newZ = (int)selectTile.Pos.z + offsets4[i].z;
 					adjacentKey = $"{newX}-{newY}-{newZ}";
 

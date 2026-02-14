@@ -4,6 +4,8 @@ using picture_game_view.Assets.Modules.TileSystem.Configs;
 using Zenject;
 using System;
 using UnityGame.Assets.Modules.TileSystem.Scripts.Domain.Tile;
+using UnityGame.Assets.Modules.GameLogic.Scripts.Services;
+
 
 public class TileSpawner
 {
@@ -16,6 +18,8 @@ public class TileSpawner
     {
         NomalTile = TIleObjSet.GetTileObj(TIleObjType.NomalTile);
         _tileManager = manager;
+
+
     }
 
     // タイル配置メソッド
@@ -28,6 +32,7 @@ public class TileSpawner
 
             _tileManager.SetOwnerInfo(ownerRelation);
         }
+        new DisplayTileState(_tileManager).DisplayClicableTile("1-0-1", 5);
     }
 
     public void changeTile()

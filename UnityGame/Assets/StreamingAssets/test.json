@@ -494,7 +494,7 @@
 			},
 			"1-0-1": {
 				"key": "1-0-1",
-				"type": "empty",
+				"type": "clickableTeamB",
 				"position": {
 					"x": 1,
 					"y": 0,
