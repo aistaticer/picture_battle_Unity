@@ -149,16 +149,6 @@ namespace UnityGame.Assets.Modules.GameLogic.Scripts.Services
             var marker = GameObject.Instantiate(_markerPrefab, tileData.Position.ToVector3(), Quaternion.identity);
             marker.name = $"ClickableMarker_{tileKey}";
 
-            // 各インスタンスが独自のマテリアルを持つように設定
-            // var renderer = marker.GetComponent<Renderer>();
-            // if (renderer != null)
-            // {
-            //     // sharedMaterialではなく、materialプロパティを使用することで
-            //     // 各インスタンスが独自のマテリアルコピーを持つようになる
-            //     var materialCopy = new Material(renderer.sharedMaterial);
-            //     renderer.material = materialCopy;
-            // }
-
             // リストに追加
             _displayedMarkers.Add(marker);
         }
@@ -176,6 +166,26 @@ namespace UnityGame.Assets.Modules.GameLogic.Scripts.Services
                 }
             }
             _displayedMarkers.Clear();
+        }
+
+        /// <summary>
+        /// クリック可能なタイルの中から指定されたタイルの色を変更する
+        /// </summary>
+        /// <param name="tileKey">色を変更するタイルのキー</param>
+        /// <param name="tileType">変更後のタイルタイプ（色）</param>
+        /// <returns>タイルの色変更に成功した場合true、失敗した場合false</returns>
+        public bool ChangeClickableTileColor(string tileKey, TileType tileType)
+        {
+            // 指定されたタイルがクリック可能タイルに登録されているか確認
+            if (!_tileManager.IsClickable(tileKey))
+            {
+                Debug.LogWarning($"タイル {tileKey} はクリック可能タイルとして登録されていません");
+                return false;
+            }
+
+            // タイルの色を変更
+            _tileManager.ChangesetColor(tileKey, tileType);
+            return true;
         }
     }
 }

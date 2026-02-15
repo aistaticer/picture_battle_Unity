@@ -32,7 +32,6 @@ public class TileSpawner
 
             _tileManager.SetOwnerInfo(ownerRelation);
         }
-        new DisplayTileState(_tileManager).DisplayClicableTile("4-0-6", 5);
     }
 
     public void changeTile()

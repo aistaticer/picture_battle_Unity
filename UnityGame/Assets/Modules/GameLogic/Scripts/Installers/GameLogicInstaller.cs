@@ -8,6 +8,7 @@ using UnityEngine;
 using picture_game_view.Assets.Modules.Shared;
 using picture_game_view.Assets.Modules.GameLogic.Scripts.Controllers;
 using UnityGame.Assets.Modules.GameLogic.Scripts.Controllers;
+using UnityGame.Assets.Modules.GameLogic.Scripts.Services;
 
 public class GameLogicInstaller : MonoInstaller
 {
@@ -22,8 +23,12 @@ public class GameLogicInstaller : MonoInstaller
         InstallerHelper.BindClass<StartUp>(Container);
         InstallerHelper.BindClass<TileSpawner>(Container);
         InstallerHelper.BindClass<TileActionService>(Container);
+        InstallerHelper.BindClass<DisplayTileState>(Container);
         InstallerHelper.BindMono<MapController>(Container);
         InstallerHelper.BindClass<TileLogicController>(Container);
+
+        // SelectionController を ITickable, IInitializable としてバインド
+        Container.BindInterfacesAndSelfTo<SelectionController>().AsSingle();
 
         // PlayerManagerはPlayerSystemStartUpで動的に生成してバインドされる
     }
