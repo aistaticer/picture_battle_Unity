@@ -22,6 +22,11 @@ public class TileManager
 	/// <returns></returns>
 	private Dictionary<string, string> OwnerDict = new Dictionary<string, string>();
 
+	/// <summary>
+	/// クリック可能なタイルを一時的に保持する辞書型
+	/// </summary>
+	private HashSet<string> _clickableTiles = new HashSet<string>();
+
 
 
 	/// <summary>
@@ -171,5 +176,43 @@ public class TileManager
 	{
 		OwnerDict.TryGetValue(tileKey, out var userId);
 		return userId;
+	}
+
+	// ========== クリック可能タイル管理 ==========
+
+	/// <summary>
+	/// クリック可能タイルを登録する
+	/// </summary>
+	/// <param name="tileKey">タイルのキー</param>
+	public void RegisterClickableTile(string tileKey)
+	{
+		_clickableTiles.Add(tileKey);
+	}
+
+	/// <summary>
+	/// 全てのクリック可能タイルをクリアする
+	/// </summary>
+	public void ClearClickableTiles()
+	{
+		_clickableTiles.Clear();
+	}
+
+	/// <summary>
+	/// クリック可能タイルのキーリストを取得する
+	/// </summary>
+	/// <returns>クリック可能なタイルキーのHashSet</returns>
+	public HashSet<string> GetClickableTiles()
+	{
+		return new HashSet<string>(_clickableTiles);
+	}
+
+	/// <summary>
+	/// 指定されたタイルがクリック可能かどうかをチェックする
+	/// </summary>
+	/// <param name="tileKey">タイルのキー</param>
+	/// <returns>クリック可能ならtrue</returns>
+	public bool IsClickable(string tileKey)
+	{
+		return _clickableTiles.Contains(tileKey);
 	}
 }

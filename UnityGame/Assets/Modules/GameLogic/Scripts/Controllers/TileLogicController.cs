@@ -30,6 +30,13 @@ namespace picture_game_view.Assets.Modules.GameLogic.Scripts.Controllers
             _signalBus.Subscribe<TileClickedSignal>(OnTileClicked); 
         }
 
+        /// <summary>
+        /// タイルクリック時のイベントハンドラー。
+        /// クリックされたタイルの所有者がtestIdの場合、
+        /// Alice（player001）の位置からクリックされたタイルまでの最短経路を計算し、
+        /// 経路上の全タイルを「clickedTeamA」色に変更する。
+        /// </summary>
+        /// <param name="signal">タイルクリックシグナル（クリックされたタイルの情報を含む）</param>
         internal void OnTileClicked(TileClickedSignal signal)
         {
             // ここでゲームルールに従って状態を変える（移動可能判定、選択状態更新等）

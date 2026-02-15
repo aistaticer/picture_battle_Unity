@@ -13,7 +13,6 @@ public class GameLogicInstaller : MonoInstaller
 {
     public override void InstallBindings()
     {
-        Debug.Log("aaaa");
         // SignalBus 自体のバインド（StartUpから移動）
         SignalBusInstaller.Install(Container);
 
