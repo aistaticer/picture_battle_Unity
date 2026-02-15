@@ -64,8 +64,8 @@ namespace picture_game_view.Assets.Modules.GameLogic.Scripts.Controllers
 				return;
 			}
 
-			// Aliceの位置から移動可能な範囲（例：5マス）を表示
-			_displayTileState.DisplayClicableTile(playerTileKey, 6);
+			// Aliceの位置から移動可能な範囲を表示
+			_displayTileState.DisplayClicableTile(playerTileKey, 7);
 
 			// 初期選択位置をAliceの位置に設定
 			_currentSelectedTileKey = playerTileKey;
@@ -193,34 +193,14 @@ namespace picture_game_view.Assets.Modules.GameLogic.Scripts.Controllers
 				// --- モードによって候補の選び方を変える ---
 				if (ignoreAlignment)
 				{
-					// ========== Zキー押している場合：列/行を無視して最短距離優先 ==========
-					if (distance < bestDistance)
+					// ========== Zキー押している場合：押した方向に連なっている最も遠いタイルを選択 ==========
+					if (isSameLane)
 					{
-						// より近いタイルが見つかったら更新
-						bestDistance = distance;
-						bestTileKey = tileKey;
-					}
-					else if (distance == bestDistance && bestTileKey != null)
-					{
-						// マンハッタン距離が同じ場合は、ユークリッド距離（直線距離）で近い方を優先
-						var currentBestData = _tileManager.GetTileData(bestTileKey);
-						if (currentBestData != null)
+						// 同じ列/行にあるタイル → より遠いタイルを優先（連なりの端まで移動）
+						if (bestTileKey == null || distance > bestDistance)
 						{
-							// 現在位置からのユークリッド距離を計算
-							float currentBestEuclidean = Mathf.Sqrt(
-								Mathf.Pow((int)currentBestData.Position.x - currentX, 2) +
-								Mathf.Pow((int)currentBestData.Position.z - currentZ, 2)
-							);
-							float newEuclidean = Mathf.Sqrt(
-								Mathf.Pow(tileX - currentX, 2) +
-								Mathf.Pow(tileZ - currentZ, 2)
-							);
-
-							// ユークリッド距離で近い方を選択
-							if (newEuclidean < currentBestEuclidean)
-							{
-								bestTileKey = tileKey;
-							}
+							bestDistance = distance;
+							bestTileKey = tileKey;
 						}
 					}
 				}
@@ -259,7 +239,7 @@ namespace picture_game_view.Assets.Modules.GameLogic.Scripts.Controllers
 			if (targetTileKey != null)
 			{
 				// 前の選択を解除（色を元に戻す）
-				_displayTileState.ChangeClickableTileColor(_currentSelectedTileKey, TileType.clickableTeamA);
+				_displayTileState.ChangeClickableTileColor(_currentSelectedTileKey, TileType.Empty);
 
 				// 新しいタイルを選択してハイライト
 				_currentSelectedTileKey = targetTileKey;

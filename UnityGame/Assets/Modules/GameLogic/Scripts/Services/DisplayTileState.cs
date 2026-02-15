@@ -102,9 +102,9 @@ namespace UnityGame.Assets.Modules.GameLogic.Scripts.Services
                         if (nextTileData == null)
                             continue;
 
-                        // 移動距離が指定された距離と一致する場合、マーカーオブジェクトを配置
+                        // 移動距離が指定された距離以下の場合、マーカーオブジェクトを配置
                         // 同じタイルに複数の経路で到達する可能性があるため、markerCreatedで重複チェック
-                        if (distance + 1 == moveDistance)
+                        if (distance + 1 <= moveDistance)
                         {
                             if (!markerCreated.Contains(adjacentKey))
                             {
