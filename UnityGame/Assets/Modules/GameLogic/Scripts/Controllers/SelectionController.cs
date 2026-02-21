@@ -259,17 +259,21 @@ namespace picture_game_view.Assets.Modules.GameLogic.Scripts.Controllers
 		/// </summary>
 		private void ConfirmSelection()
 		{
-			if (_currentSelectedTileKey == null)
-				return;
+				if (_currentSelectedTileKey == null)
+						return;
 
-			// 選択されたタイルの色を最終的な色に変更
-			_displayTileState.ChangeClickableTileColor(_currentSelectedTileKey, TileType.clickedTeamA);
+				// 選択されたタイルの色を最終的な色に変更
+				_displayTileState.ChangeClickableTileColor(_currentSelectedTileKey, TileType.clickedTeamA);
 
-			Debug.Log($"選択決定: {_currentSelectedTileKey}");
+				// Aliceを選択されたタイルに移動
+				_playerManager.MovePlayerToTileKey("player001", _currentSelectedTileKey);
 
-			// 選択モードを終了
-			EndSelectionMode();
+				Debug.Log($"選択決定: {_currentSelectedTileKey}");
+
+				// 選択モードを終了
+				EndSelectionMode();
 		}
+
 
 		/// <summary>
 		/// 選択モードをキャンセルする

@@ -71,5 +71,63 @@ public class PlayerManager
 		return null;
 	}
 
+	/// <summary>
+	/// UserIdに対応するプレイヤーオブジェクトを指定座標に移動させる
+	/// </summary>
+	/// <param name="userId">移動させるプレイヤーのUserId</param>
+	/// <param name="targetPosition">移動先の座標</param>
+	/// <returns>移動に成功した場合true、失敗した場合false</returns>
+	public bool MovePlayerToPosition(string userId, Vector3 targetPosition)
+	{
+		foreach (var kvp in _playerObjects)
+		{
+			if (kvp.Key.Info.UserId == userId)
+			{
+				if (kvp.Value != null)
+				{
+					kvp.Value.transform.position = targetPosition;
+					return true;
+				}
+				else
+				{
+					Debug.LogWarning($"UserId {userId} のプレイヤーオブジェクトがnullです");
+					return false;
+				}
+			}
+		}
+		Debug.LogWarning($"UserId {userId} のプレイヤーが見つかりません");
+		return false;
+	}
+
+	/// <summary>
+	/// UserIdに対応するプレイヤーオブジェクトを指定タイルキーの座標に移動させる
+	/// </summary>
+	/// <param name="userId">移動させるプレイヤーのUserId</param>
+	/// <param name="tileKey">移動先のタイルキー（"x-y-z"形式）</param>
+	/// <returns>移動に成功した場合true、失敗した場合false</returns>
+	public bool MovePlayerToTileKey(string userId, string tileKey)
+	{
+		// タイルキーを座標に変換（"1-0-1" → Vector3(1, 0, 1)）
+		var parts = tileKey.Split('-');
+		if (parts.Length != 3)
+		{
+			Debug.LogWarning($"無効なタイルキー形式: {tileKey}");
+			return false;
+		}
+
+		if (int.TryParse(parts[0], out int x) &&
+		    int.TryParse(parts[1], out int y) &&
+		    int.TryParse(parts[2], out int z))
+		{
+			Vector3 targetPosition = new Vector3(x, y, z);
+			return MovePlayerToPosition(userId, targetPosition);
+		}
+		else
+		{
+			Debug.LogWarning($"タイルキーのパースに失敗: {tileKey}");
+			return false;
+		}
+	}
+
 }
 
