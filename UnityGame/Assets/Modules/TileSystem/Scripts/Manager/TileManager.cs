@@ -178,6 +178,23 @@ public class TileManager
 		return userId;
 	}
 
+	/// <summary>
+	/// 指定されたタイルの所有者を変更する
+	/// </summary>
+	/// <param name="tileKey">タイルのキー</param>
+	/// <param name="ownerId">新しい所有者ID（"TeamA", "TeamB", "empty"など）</param>
+	public void SetTileOwner(string tileKey, string ownerId)
+	{
+		if (OwnerDict.ContainsKey(tileKey))
+		{
+			OwnerDict[tileKey] = ownerId;
+		}
+		else
+		{
+			OwnerDict.Add(tileKey, ownerId);
+		}
+	}
+
 	// ========== クリック可能タイル管理 ==========
 
 	/// <summary>

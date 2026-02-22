@@ -31,7 +31,7 @@ public class SelectionManager : MonoBehaviour
 	/// </summary>
 	public void StartSelectionMode()
 	{
-		_selectionController.StartSelectionMode();
+		_selectionController.StartSelectionMode("player001");
 	}
 
 	/// <summary>

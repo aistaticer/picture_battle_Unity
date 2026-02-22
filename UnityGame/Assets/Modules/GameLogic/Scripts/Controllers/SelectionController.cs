@@ -40,7 +40,7 @@ namespace picture_game_view.Assets.Modules.GameLogic.Scripts.Controllers
 			// 選択モード開始（Spaceキー）
 			if (Input.GetKeyDown(KeyCode.Space))
 			{
-				StartSelectionMode();
+				StartSelectionMode("player001");
 			}
 
 			// 選択モード中の処理
@@ -51,27 +51,28 @@ namespace picture_game_view.Assets.Modules.GameLogic.Scripts.Controllers
 		}
 
 		/// <summary>
-		/// 選択モードを開始する（Aliceの位置を基準に）
+		/// 選択モードを開始する（指定されたプレイヤーの位置を基準に）
 		/// </summary>
-		public void StartSelectionMode()
+		/// <param name="userId">プレイヤーのUserId</param>
+		public void StartSelectionMode(string userId)
 		{
-			// Alice (player001) の現在位置を取得
-			string playerTileKey = _playerManager.GetPlayerTileKeyByUserId("player001");
+			// 指定されたプレイヤーの現在位置を取得
+			string playerTileKey = _playerManager.GetPlayerTileKeyByUserId(userId);
 
 			if (playerTileKey == null)
 			{
-				Debug.LogWarning("Aliceの位置が見つかりません");
+				Debug.LogWarning($"{userId}の位置が見つかりません");
 				return;
 			}
 
-			// Aliceの位置から移動可能な範囲を表示
+			// プレイヤーの位置から移動可能な範囲を表示
 			_displayTileState.DisplayClicableTile(playerTileKey, 7);
 
-			// 初期選択位置をAliceの位置に設定
+			// 初期選択位置をプレイヤーの位置に設定
 			_currentSelectedTileKey = playerTileKey;
 			_isSelectionModeActive = true;
 
-			Debug.Log($"選択モード開始: Aliceの位置 {playerTileKey}");
+			Debug.Log($"選択モード開始: {userId}の位置 {playerTileKey}");
 		}
 
 		/// <summary>

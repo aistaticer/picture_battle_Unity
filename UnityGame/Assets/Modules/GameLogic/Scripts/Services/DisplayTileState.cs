@@ -187,6 +187,31 @@ namespace UnityGame.Assets.Modules.GameLogic.Scripts.Services
             _tileManager.ChangesetColor(tileKey, tileType);
             return true;
         }
+
+        /// <summary>
+        /// クリック可能なタイルの色と所有者を同時に変更する
+        /// </summary>
+        /// <param name="tileKey">変更するタイルのキー</param>
+        /// <param name="tileType">変更後のタイルタイプ（色）</param>
+        /// <param name="ownerId">変更後の所有者ID（"TeamA", "TeamB"など）</param>
+        /// <returns>変更に成功した場合true、失敗した場合false</returns>
+        public bool ChangeClickableTileColorAndOwner(string tileKey, TileType tileType, string ownerId)
+        {
+            // 指定されたタイルがクリック可能タイルに登録されているか確認
+            if (!_tileManager.IsClickable(tileKey))
+            {
+                Debug.LogWarning($"タイル {tileKey} はクリック可能タイルとして登録されていません");
+                return false;
+            }
+
+            // 色を変更
+            _tileManager.ChangesetColor(tileKey, tileType);
+
+            // 所有者を変更
+            _tileManager.SetTileOwner(tileKey, ownerId);
+
+            return true;
+        }
     }
 }
 

@@ -85,7 +85,16 @@ public class PlayerManager
 			{
 				if (kvp.Value != null)
 				{
+					// GameObjectの位置を更新
 					kvp.Value.transform.position = targetPosition;
+
+					// PlayerStateの位置を更新
+					kvp.Key.UpdateTransform(targetPosition, kvp.Value.transform.rotation);
+
+					// PlayerInfoStateの位置を更新
+					Position newPosition = Position.FromVector3(targetPosition);
+					kvp.Key.Info.UpdatePosition(newPosition);
+
 					return true;
 				}
 				else

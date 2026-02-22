@@ -18,5 +18,14 @@ public class PlayerInfoState
 		ModelType = modelType;
 		Position = position;
 	}
+
+	/// <summary>
+	/// プレイヤーの位置を更新する
+	/// </summary>
+	/// <param name="newPosition">新しい位置</param>
+	public void UpdatePosition(Position newPosition)
+	{
+		Position = newPosition;
+	}
 }
 
