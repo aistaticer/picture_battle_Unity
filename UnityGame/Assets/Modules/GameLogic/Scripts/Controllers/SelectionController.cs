@@ -17,6 +17,7 @@ namespace picture_game_view.Assets.Modules.GameLogic.Scripts.Controllers
 		private readonly TileManager _tileManager;
 		private readonly GameStateController _gameStateController;
 		private readonly CameraShaker _cameraShaker;
+		private readonly PlayerMover _playerMover;
 
 		// 現在選択中のタイルキー
 		private string _currentSelectedTileKey = null;
@@ -35,13 +36,15 @@ namespace picture_game_view.Assets.Modules.GameLogic.Scripts.Controllers
 			DisplayTileState displayTileState,
 			TileManager tileManager,
 			GameStateController gameStateController,
-			CameraShaker cameraShaker)
+			CameraShaker cameraShaker,
+			PlayerMover playerMover)
 		{
 			_playerManager = playerManager;
 			_displayTileState = displayTileState;
 			_tileManager = tileManager;
 			_gameStateController = gameStateController;
 			_cameraShaker = cameraShaker;
+			_playerMover = playerMover;
 		}
 
 		public void Initialize()
@@ -148,6 +151,13 @@ namespace picture_game_view.Assets.Modules.GameLogic.Scripts.Controllers
 		{
 			if (_currentSelectedTileKey == null)
 				return;
+
+			// 移動中の場合は新しい移動を受け付けない
+			if (_playerMover != null && _playerMover.IsMoving)
+			{
+				Debug.Log("プレイヤー移動中のため、次の移動は待機してください");
+				return;
+			}
 
 			// ========== ステップ1: 現在位置の取得 ==========
 			var currentTileData = _tileManager.GetTileData(_currentSelectedTileKey);
