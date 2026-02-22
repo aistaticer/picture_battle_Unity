@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections.Generic;
+using Zenject;
 
 /// <summary>
 /// ゲーム内のプレイヤー情報を管理
@@ -9,7 +10,13 @@ public class PlayerManager
 	private readonly Dictionary<PlayerState, GameObject> _playerObjects
 			= new Dictionary<PlayerState, GameObject>();
 
-	// Awake()とConstruct()は削除 - 初期化はPlayerSystemStartUpで行う
+	private PlayerMover _playerMover;
+
+	[Inject]
+	public void Construct(PlayerMover playerMover)
+	{
+		_playerMover = playerMover;
+	}
 
 	/// <summary>
 	/// 受け取った情報からオブジェクトを生成し、playerのオブジェクトとして配置する
@@ -145,6 +152,67 @@ public class PlayerManager
 		{
 			Vector3 targetPosition = new Vector3(x, y, z);
 			return MovePlayerToPosition(userId, targetPosition);
+		}
+		else
+		{
+			Debug.LogWarning($"タイルキーのパースに失敗: {tileKey}");
+			return false;
+		}
+	}
+
+	/// <summary>
+	/// UserIdに対応するプレイヤーオブジェクトを指定タイルキーの座標に移動させ、進行方向を向く
+	/// </summary>
+	/// <param name="userId">移動させるプレイヤーのUserId</param>
+	/// <param name="tileKey">移動先のタイルキー（"x-y-z"形式）</param>
+	/// <param name="direction">進行方向ベクトル</param>
+	/// <returns>移動に成功した場合true、失敗した場合false</returns>
+	public bool MovePlayerToTileKeyWithDirection(string userId, string tileKey, Vector3 direction)
+	{
+		// タイルキーを座標に変換
+		var parts = tileKey.Split('-');
+		if (parts.Length != 3)
+		{
+			Debug.LogWarning($"無効なタイルキー形式: {tileKey}");
+			return false;
+		}
+
+		if (int.TryParse(parts[0], out int x) &&
+		    int.TryParse(parts[1], out int y) &&
+		    int.TryParse(parts[2], out int z))
+		{
+			Vector3 targetPosition = new Vector3(x, y, z);
+
+			foreach (var kvp in _playerObjects)
+			{
+				if (kvp.Key.Info.UserId == userId)
+				{
+					if (kvp.Value != null)
+					{
+						// DI登録されたPlayerMoverを使用してジャンプ移動
+						if (_playerMover != null)
+						{
+							_playerMover.JumpToPosition(kvp.Value.transform, targetPosition, direction);
+						}
+
+						// PlayerStateの位置と回転を更新（最終位置で更新）
+						kvp.Key.UpdateTransform(targetPosition, kvp.Value.transform.rotation);
+
+						// PlayerInfoStateの位置を更新
+						Position newPosition = Position.FromVector3(targetPosition);
+						kvp.Key.Info.UpdatePosition(newPosition);
+
+						return true;
+					}
+					else
+					{
+						Debug.LogWarning($"UserId {userId} のプレイヤーオブジェクトがnullです");
+						return false;
+					}
+				}
+			}
+			Debug.LogWarning($"UserId {userId} のプレイヤーが見つかりません");
+			return false;
 		}
 		else
 		{

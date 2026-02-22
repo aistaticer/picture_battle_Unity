@@ -305,6 +305,20 @@ namespace picture_game_view.Assets.Modules.GameLogic.Scripts.Controllers
 			// ========== ステップ6: 選択を実行 ==========
 			if (targetTileKey != null)
 			{
+				// 進行方向を計算（現在位置から目標位置へのベクトル）
+				var currentTilePos = _tileManager.GetTileData(_currentSelectedTileKey)?.Position;
+				var targetTilePos = _tileManager.GetTileData(targetTileKey)?.Position;
+				Vector3 direction = Vector3.zero;
+
+				if (currentTilePos != null && targetTilePos != null)
+				{
+					direction = (targetTilePos.ToVector3() - currentTilePos.ToVector3()).normalized;
+				}
+
+				// プレイヤーを新しいタイルに移動させる（進行方向を向く）
+				string currentPlayerId = _gameStateController.GetCurrentPlayerId();
+				_playerManager.MovePlayerToTileKeyWithDirection(currentPlayerId, targetTileKey, direction);
+
 				// 新しいタイルを選択
 				_currentSelectedTileKey = targetTileKey;
 
@@ -322,7 +336,6 @@ namespace picture_game_view.Assets.Modules.GameLogic.Scripts.Controllers
 				}
 
 				// タイルの所有権を取得（通った経路を所有）
-				string currentPlayerId = _gameStateController.GetCurrentPlayerId();
 				TileType tileType = GetClickedTileTypeForPlayer(currentPlayerId);
 				_displayTileState.ChangeClickableTileColor(targetTileKey, tileType);
 
@@ -393,6 +406,20 @@ namespace picture_game_view.Assets.Modules.GameLogic.Scripts.Controllers
 			// 移動可能距離を増やす
 			_remainingMoveDistance++;
 
+			// 進行方向を計算（現在位置から戻り先へのベクトル）
+			var currentTilePos = _tileManager.GetTileData(currentTileKey)?.Position;
+			var targetTilePos = _tileManager.GetTileData(targetTileKey)?.Position;
+			Vector3 direction = Vector3.zero;
+
+			if (currentTilePos != null && targetTilePos != null)
+			{
+				direction = (targetTilePos.ToVector3() - currentTilePos.ToVector3()).normalized;
+			}
+
+			// プレイヤーを戻り先のタイルに移動させる（進行方向を向く）
+			string currentPlayerId = _gameStateController.GetCurrentPlayerId();
+			_playerManager.MovePlayerToTileKeyWithDirection(currentPlayerId, targetTileKey, direction);
+
 			// 選択を更新
 			_currentSelectedTileKey = targetTileKey;
 
@@ -424,9 +451,6 @@ namespace picture_game_view.Assets.Modules.GameLogic.Scripts.Controllers
 					// IsClickableチェックをスキップして直接色を変更
 					_tileManager.ChangesetColor(tileKey, tileType);
 				}
-
-				// 現在のターンのプレイヤーを選択されたタイルに移動
-				_playerManager.MovePlayerToTileKey(currentPlayerId, _currentSelectedTileKey);
 
 				Debug.Log($"選択決定: {_currentSelectedTileKey} ({_gameStateController.GetCurrentPlayerName()}), 訪問したタイル数: {_visitedTiles.Count}");
 

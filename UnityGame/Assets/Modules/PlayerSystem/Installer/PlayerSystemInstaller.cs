@@ -16,6 +16,9 @@ public class PlayerSystemInstaller : MonoInstaller
         // Movementをバインド
         Container.Bind<Movement>().AsSingle();
 
+        // PlayerMoverをバインド（汎用的なジャンプ移動コンポーネント）
+        InstallerHelper.BindMono<PlayerMover>(Container);
+
         // PlayerManagerをバインド（StartUpより先に）
         InstallerHelper.BindClass<PlayerManager>(Container);
 
