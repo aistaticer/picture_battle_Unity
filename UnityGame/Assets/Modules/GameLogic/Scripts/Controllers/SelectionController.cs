@@ -13,21 +13,21 @@ namespace picture_game_view.Assets.Modules.GameLogic.Scripts.Controllers
 		private readonly PlayerManager _playerManager;
 		private readonly DisplayTileState _displayTileState;
 		private readonly TileManager _tileManager;
+		private readonly GameStateController _gameStateController;
 
 		// 現在選択中のタイルキー
 		private string _currentSelectedTileKey = null;
 
-		// 選択モードが有効かどうか
-		private bool _isSelectionModeActive = false;
-
 		public SelectionController(
 			PlayerManager playerManager,
 			DisplayTileState displayTileState,
-			TileManager tileManager)
+			TileManager tileManager,
+			GameStateController gameStateController)
 		{
 			_playerManager = playerManager;
 			_displayTileState = displayTileState;
 			_tileManager = tileManager;
+			_gameStateController = gameStateController;
 		}
 
 		public void Initialize()
@@ -37,14 +37,16 @@ namespace picture_game_view.Assets.Modules.GameLogic.Scripts.Controllers
 
 		public void Tick()
 		{
-			// 選択モード開始（Spaceキー）
-			if (Input.GetKeyDown(KeyCode.Space))
+			// 選択モードがアクティブでない場合のみ、スペースキーで選択モードを開始
+			if (_gameStateController.CanStartSelection() && Input.GetKeyDown(KeyCode.Space))
 			{
-				StartSelectionMode("player001");
+				// 現在のターンのプレイヤーで選択モードを開始
+				string currentPlayerId = _gameStateController.GetCurrentPlayerId();
+				StartSelectionMode(currentPlayerId);
 			}
 
 			// 選択モード中の処理
-			if (_isSelectionModeActive)
+			if (_gameStateController.GetCurrentState() == GameState.Selecting)
 			{
 				HandleArrowKeySelection();
 			}
@@ -70,9 +72,9 @@ namespace picture_game_view.Assets.Modules.GameLogic.Scripts.Controllers
 
 			// 初期選択位置をプレイヤーの位置に設定
 			_currentSelectedTileKey = playerTileKey;
-			_isSelectionModeActive = true;
 
-			Debug.Log($"選択モード開始: {userId}の位置 {playerTileKey}");
+			// GameStateControllerで選択モードを開始
+			_gameStateController.StartSelection();
 		}
 
 		/// <summary>
@@ -256,6 +258,22 @@ namespace picture_game_view.Assets.Modules.GameLogic.Scripts.Controllers
 		}
 
 		/// <summary>
+		/// プレイヤーIDからチームに応じた選択済みタイルの色（TileType）を取得する
+		/// </summary>
+		private TileType GetClickedTileTypeForPlayer(string playerId)
+		{
+			var playerInfo = _playerManager.GetPlayerInfoByUserId(playerId);
+			if (playerInfo == null)
+			{
+				// プレイヤー情報が取得できない場合はデフォルトでTeamA
+				return TileType.clickedTeamA;
+			}
+
+			// チーム名に応じて適切な色を返す
+			return playerInfo.TeamName == "TeamA" ? TileType.clickedTeamA : TileType.clickedTeamB;
+		}
+
+		/// <summary>
 		/// 選択を決定して色を変更する
 		/// </summary>
 		private void ConfirmSelection()
@@ -263,13 +281,22 @@ namespace picture_game_view.Assets.Modules.GameLogic.Scripts.Controllers
 				if (_currentSelectedTileKey == null)
 						return;
 
+				// 現在のターンのプレイヤーIDを取得
+				string currentPlayerId = _gameStateController.GetCurrentPlayerId();
+
+				// プレイヤーのチームに応じた色を取得
+				TileType tileType = GetClickedTileTypeForPlayer(currentPlayerId);
+
 				// 選択されたタイルの色を最終的な色に変更
-				_displayTileState.ChangeClickableTileColor(_currentSelectedTileKey, TileType.clickedTeamA);
+				_displayTileState.ChangeClickableTileColor(_currentSelectedTileKey, tileType);
 
-				// Aliceを選択されたタイルに移動
-				_playerManager.MovePlayerToTileKey("player001", _currentSelectedTileKey);
+				// 現在のターンのプレイヤーを選択されたタイルに移動
+				_playerManager.MovePlayerToTileKey(currentPlayerId, _currentSelectedTileKey);
 
-				Debug.Log($"選択決定: {_currentSelectedTileKey}");
+				Debug.Log($"選択決定: {_currentSelectedTileKey} ({_gameStateController.GetCurrentPlayerName()})");
+
+				// 移動を確定し、ターンを切り替え（GameStateControllerで状態もIdleに戻る）
+				_gameStateController.ConfirmMove();
 
 				// 選択モードを終了
 				EndSelectionMode();
@@ -282,6 +309,11 @@ namespace picture_game_view.Assets.Modules.GameLogic.Scripts.Controllers
 		public void CancelSelectionMode()
 		{
 			Debug.Log("選択モードをキャンセル");
+
+			// GameStateControllerでキャンセル処理
+			_gameStateController.CancelSelection();
+
+			// 選択モードを終了
 			EndSelectionMode();
 		}
 
@@ -295,13 +327,13 @@ namespace picture_game_view.Assets.Modules.GameLogic.Scripts.Controllers
 			_tileManager.ClearClickableTiles();
 
 			_currentSelectedTileKey = null;
-			_isSelectionModeActive = false;
+			// 状態はGameStateControllerで管理されるため、ここでは設定しない
 		}
 
 		/// <summary>
 		/// 現在の選択状態を取得する
 		/// </summary>
-		public bool IsSelectionModeActive => _isSelectionModeActive;
+		public bool IsSelectionModeActive => _gameStateController.GetCurrentState() == GameState.Selecting;
 
 		/// <summary>
 		/// 現在選択中のタイルキーを取得する

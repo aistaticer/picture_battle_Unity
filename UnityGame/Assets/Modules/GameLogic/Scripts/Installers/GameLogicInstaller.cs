@@ -27,6 +27,9 @@ public class GameLogicInstaller : MonoInstaller
         InstallerHelper.BindMono<MapController>(Container);
         InstallerHelper.BindClass<TileLogicController>(Container);
 
+        // GameStateController を IInitializable としてバインド
+        Container.BindInterfacesAndSelfTo<GameStateController>().AsSingle();
+
         // SelectionController を ITickable, IInitializable としてバインド
         Container.BindInterfacesAndSelfTo<SelectionController>().AsSingle();
 

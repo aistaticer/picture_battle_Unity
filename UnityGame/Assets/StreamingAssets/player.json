@@ -1,14 +1,14 @@
 [
   {
     "userName": "Alice",
-    "teamName": "Red",
+    "teamName": "TeamA",
     "userId": "player001",
     "modelType": "Ghost",
 		"position": { "x": 4, "y": 0, "z": 6 }
   },
   {
     "userName": "Bob",
-    "teamName": "Blue",
+    "teamName": "TeamB",
     "userId": "player002",
     "modelType": "Cube",
 		"position": { "x": 6, "y": 0, "z": 3 }
