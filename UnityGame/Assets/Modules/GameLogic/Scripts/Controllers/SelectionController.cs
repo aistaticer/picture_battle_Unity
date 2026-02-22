@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using UnityEngine;
 using Zenject;
 using UnityGame.Assets.Modules.GameLogic.Scripts.Services;
@@ -14,20 +15,32 @@ namespace picture_game_view.Assets.Modules.GameLogic.Scripts.Controllers
 		private readonly DisplayTileState _displayTileState;
 		private readonly TileManager _tileManager;
 		private readonly GameStateController _gameStateController;
+		private readonly CameraShaker _cameraShaker;
 
 		// 現在選択中のタイルキー
 		private string _currentSelectedTileKey = null;
+
+		// 残りの移動可能距離
+		private int _remainingMoveDistance = 0;
+
+		// 訪問したタイルのリスト（通った経路を記録）
+		private List<string> _visitedTiles = new List<string>();
+
+		// タイルの元の所有者を保存する辞書（所有者から色を逆算できる）
+		private Dictionary<string, string> _originalTileOwners = new Dictionary<string, string>();
 
 		public SelectionController(
 			PlayerManager playerManager,
 			DisplayTileState displayTileState,
 			TileManager tileManager,
-			GameStateController gameStateController)
+			GameStateController gameStateController,
+			CameraShaker cameraShaker)
 		{
 			_playerManager = playerManager;
 			_displayTileState = displayTileState;
 			_tileManager = tileManager;
 			_gameStateController = gameStateController;
+			_cameraShaker = cameraShaker;
 		}
 
 		public void Initialize()
@@ -67,8 +80,13 @@ namespace picture_game_view.Assets.Modules.GameLogic.Scripts.Controllers
 				return;
 			}
 
+			// 移動可能距離と訪問済みリストを初期化
+			_remainingMoveDistance = 4;
+			_visitedTiles.Clear();
+			_visitedTiles.Add(playerTileKey); // 開始位置を訪問済みに追加
+
 			// プレイヤーの位置から移動可能な範囲を表示
-			_displayTileState.DisplayClicableTile(playerTileKey, 7);
+			_displayTileState.DisplayClicableTile(playerTileKey, _remainingMoveDistance);
 
 			// 初期選択位置をプレイヤーの位置に設定
 			_currentSelectedTileKey = playerTileKey;
@@ -117,6 +135,12 @@ namespace picture_game_view.Assets.Modules.GameLogic.Scripts.Controllers
 			{
 				CancelSelectionMode();
 			}
+
+			// Oキーでデバッグ情報を表示
+			if (Input.GetKeyDown(KeyCode.O))
+			{
+				LogDebugInfo();
+			}
 		}
 
 		/// <summary>
@@ -137,6 +161,38 @@ namespace picture_game_view.Assets.Modules.GameLogic.Scripts.Controllers
 
 			int currentX = (int)currentTileData.Position.x;
 			int currentZ = (int)currentTileData.Position.z;
+
+			// ========== 戻る方向のチェック（clickableTiles に関係なく移動可能） ==========
+			// 来た道を戻る場合は、移動可能距離が0でも戻れるようにする
+			if (_visitedTiles.Count >= 2)
+			{
+				string previousTileKey = _visitedTiles[_visitedTiles.Count - 2];
+				var previousTileData = _tileManager.GetTileData(previousTileKey);
+
+				if (previousTileData != null)
+				{
+					int prevX = (int)previousTileData.Position.x;
+					int prevZ = (int)previousTileData.Position.z;
+
+					// 移動方向が前のタイルの方向と一致するかチェック
+					int deltaX = prevX - currentX;
+					int deltaZ = prevZ - currentZ;
+
+					// 矢印キーの方向と、前のタイルへの方向が一致する場合は戻る処理
+					bool isGoingBackDirection = false;
+					if (offsetX > 0 && deltaX > 0 && deltaZ == 0) isGoingBackDirection = true; // 右方向
+					if (offsetX < 0 && deltaX < 0 && deltaZ == 0) isGoingBackDirection = true; // 左方向
+					if (offsetZ > 0 && deltaZ > 0 && deltaX == 0) isGoingBackDirection = true; // 上方向
+					if (offsetZ < 0 && deltaZ < 0 && deltaX == 0) isGoingBackDirection = true; // 下方向
+
+					if (isGoingBackDirection)
+					{
+						// 戻る処理を実行して終了
+						GoBackToPreviousTile(previousTileKey);
+						return;
+					}
+				}
+			}
 
 			// ========== ステップ2: 候補タイルの準備 ==========
 			// クリック可能なタイル全てを取得
@@ -244,11 +300,44 @@ namespace picture_game_view.Assets.Modules.GameLogic.Scripts.Controllers
 			// ========== ステップ5: 選択を実行 ==========
 			if (targetTileKey != null)
 			{
-				// 新しいタイルを選択してハイライト
+				// 移動可能距離をチェック
+				if (_remainingMoveDistance <= 0)
+				{
+					// 移動不可 - カメラシェイク
+					_cameraShaker.Shake(0.2f, 0.1f);
+					Debug.Log("移動可能距離が0です。これ以上進めません。");
+					return;
+				}
+
+				// 新しいタイルを選択
 				_currentSelectedTileKey = targetTileKey;
+
+				// 訪問前の元の所有者を保存（まだ保存していない場合のみ）
+				if (!_originalTileOwners.ContainsKey(targetTileKey))
+				{
+					string originalOwner = _tileManager.GetOwnerInfo(targetTileKey) ?? "";
+					_originalTileOwners[targetTileKey] = originalOwner;
+				}
+
+				// 訪問済みリストに追加
+				if (!_visitedTiles.Contains(targetTileKey))
+				{
+					_visitedTiles.Add(targetTileKey);
+				}
+
+				// タイルの所有権を取得（通った経路を所有）
+				string currentPlayerId = _gameStateController.GetCurrentPlayerId();
+				TileType tileType = GetClickedTileTypeForPlayer(currentPlayerId);
+				_displayTileState.ChangeClickableTileColor(targetTileKey, tileType);
+
+				// 残りの移動可能距離を減らす
+				_remainingMoveDistance--;
+
+				// 移動可能範囲を再計算して表示
+				_displayTileState.DisplayClicableTile(targetTileKey, _remainingMoveDistance);
 				_displayTileState.HighlightMarker(_currentSelectedTileKey);
 
-				Debug.Log($"選択移動: {targetTileKey}");
+				Debug.Log($"選択移動: {targetTileKey}, 残り移動可能距離: {_remainingMoveDistance}");
 			}
 			else
 			{
@@ -274,7 +363,52 @@ namespace picture_game_view.Assets.Modules.GameLogic.Scripts.Controllers
 		}
 
 		/// <summary>
-		/// 選択を決定して色を変更する
+		/// 来た道を戻る処理
+		/// </summary>
+		/// <param name="targetTileKey">戻り先のタイルキー</param>
+		private void GoBackToPreviousTile(string targetTileKey)
+		{
+			// 現在のタイル（_visitedTiles の最後）を取得
+			string currentTileKey = _visitedTiles[_visitedTiles.Count - 1];
+
+			// 現在のタイルを _visitedTiles から削除
+			_visitedTiles.RemoveAt(_visitedTiles.Count - 1);
+
+			// 元の所有者を復元
+			if (_originalTileOwners.TryGetValue(currentTileKey, out var originalOwner))
+			{
+				// 元の所有者に戻す
+				_tileManager.SetTileOwner(currentTileKey, originalOwner);
+
+				// 所有者から色を逆算して元の色に戻す（IsClickableチェックをスキップ）
+				TileType originalType = GetTileTypeFromOwner(originalOwner);
+				_tileManager.ChangesetColor(currentTileKey, originalType);
+
+				// 保存していた所有者を削除
+				_originalTileOwners.Remove(currentTileKey);
+			}
+			else
+			{
+				// 元の所有者が保存されていない場合はデフォルトに戻す
+				_tileManager.SetTileOwner(currentTileKey, "");
+				_tileManager.ChangesetColor(currentTileKey, TileType.Empty);
+			}
+
+			// 移動可能距離を増やす
+			_remainingMoveDistance++;
+
+			// 選択を更新
+			_currentSelectedTileKey = targetTileKey;
+
+			// 移動可能範囲を再計算して表示（マーカーも再表示される）
+			_displayTileState.DisplayClicableTile(targetTileKey, _remainingMoveDistance);
+			_displayTileState.HighlightMarker(_currentSelectedTileKey);
+
+			Debug.Log($"戻る: {targetTileKey}, 残り移動可能距離: {_remainingMoveDistance}");
+		}
+
+		/// <summary>
+		/// 選択を決定してプレイヤーを移動する
 		/// </summary>
 		private void ConfirmSelection()
 		{
@@ -287,15 +421,20 @@ namespace picture_game_view.Assets.Modules.GameLogic.Scripts.Controllers
 				// プレイヤーのチームに応じた色を取得
 				TileType tileType = GetClickedTileTypeForPlayer(currentPlayerId);
 
-				// 選択されたタイルの色を最終的な色に変更
-				_displayTileState.ChangeClickableTileColor(_currentSelectedTileKey, tileType);
+				// 訪問した全てのタイルの所有者と色を現在のプレイヤーに変更
+				foreach (var tileKey in _visitedTiles)
+				{
+					_tileManager.SetTileOwner(tileKey, currentPlayerId);
+					// IsClickableチェックをスキップして直接色を変更
+					_tileManager.ChangesetColor(tileKey, tileType);
+				}
 
 				// 現在のターンのプレイヤーを選択されたタイルに移動
 				_playerManager.MovePlayerToTileKey(currentPlayerId, _currentSelectedTileKey);
 
-				Debug.Log($"選択決定: {_currentSelectedTileKey} ({_gameStateController.GetCurrentPlayerName()})");
+				Debug.Log($"選択決定: {_currentSelectedTileKey} ({_gameStateController.GetCurrentPlayerName()}), 訪問したタイル数: {_visitedTiles.Count}");
 
-				// 移動を確定し、ターンを切り替え（GameStateControllerで状態もIdleに戻る）
+				// 移動を確定（GameStateControllerで状態もIdleに戻る）
 				_gameStateController.ConfirmMove();
 
 				// 選択モードを終了
@@ -329,8 +468,79 @@ namespace picture_game_view.Assets.Modules.GameLogic.Scripts.Controllers
 			_displayTileState.ClearDisplayMarkers();
 			_tileManager.ClearClickableTiles();
 
+			// 状態をリセット
 			_currentSelectedTileKey = null;
+			_remainingMoveDistance = 0;
+			_visitedTiles.Clear();
+			_originalTileOwners.Clear();
 			// 状態はGameStateControllerで管理されるため、ここでは設定しない
+		}
+
+		/// <summary>
+		/// 所有者IDから対応するタイルタイプ（色）を取得する
+		/// </summary>
+		/// <param name="ownerId">所有者ID</param>
+		/// <returns>所有者に対応するタイルタイプ</returns>
+		private TileType GetTileTypeFromOwner(string ownerId)
+		{
+			// 所有者が空の場合はEmpty
+			if (string.IsNullOrEmpty(ownerId))
+			{
+				return TileType.Empty;
+			}
+
+			// 所有者のプレイヤー情報を取得
+			var playerInfo = _playerManager.GetPlayerInfoByUserId(ownerId);
+			if (playerInfo == null)
+			{
+				return TileType.Empty;
+			}
+
+			// チームに応じた色を返す
+			return playerInfo.TeamName == "TeamA" ? TileType.clickedTeamA : TileType.clickedTeamB;
+		}
+
+		/// <summary>
+		/// デバッグ情報をログに出力する（Oキーで呼び出される）
+		/// </summary>
+		private void LogDebugInfo()
+		{
+			Debug.Log("========== デバッグ情報 ==========");
+			Debug.Log($"現在選択中のタイル: {_currentSelectedTileKey}");
+			Debug.Log($"残りの移動可能距離: {_remainingMoveDistance}");
+
+			// 訪問済みタイルの情報
+			Debug.Log($"\n訪問済みタイル数: {_visitedTiles.Count}");
+			for (int i = 0; i < _visitedTiles.Count; i++)
+			{
+				var tileKey = _visitedTiles[i];
+				var tileData = _tileManager.GetTileData(tileKey);
+				var owner = _tileManager.GetOwnerInfo(tileKey);
+				Debug.Log($"  [{i}] {tileKey} - 位置:{tileData?.Position} - 所有者:{owner ?? "なし"}");
+			}
+
+			// 元の所有者情報
+			Debug.Log($"\n保存された元の所有者数: {_originalTileOwners.Count}");
+			foreach (var kvp in _originalTileOwners)
+			{
+				Debug.Log($"  {kvp.Key} -> 元の所有者:{(string.IsNullOrEmpty(kvp.Value) ? "なし" : kvp.Value)}");
+			}
+
+			// クリック可能タイルの情報
+			var clickableTiles = _tileManager.GetClickableTiles();
+			Debug.Log($"\nクリック可能タイル数: {clickableTiles.Count}");
+			foreach (var tileKey in clickableTiles)
+			{
+				var tileData = _tileManager.GetTileData(tileKey);
+				var owner = _tileManager.GetOwnerInfo(tileKey);
+				if (tileData != null)
+				{
+					var tileType = GetTileTypeFromOwner(owner ?? "");
+					Debug.Log($"  {tileKey} - 位置:{tileData.Position} - 所有者:{owner ?? "なし"} - 色:{tileType}");
+				}
+			}
+
+			Debug.Log("================================\n");
 		}
 
 		/// <summary>

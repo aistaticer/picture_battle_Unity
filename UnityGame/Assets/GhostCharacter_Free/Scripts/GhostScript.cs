@@ -25,7 +25,7 @@ public class GhostScript : MonoBehaviour
     private Text HP_text;
 
     // moving speed
-    [SerializeField] private float Speed = 4;
+    [SerializeField] private float Speed = 5;
 
     void Start()
     {
