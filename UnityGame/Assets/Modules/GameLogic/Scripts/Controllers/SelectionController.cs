@@ -3,6 +3,7 @@ using UnityEngine;
 using Zenject;
 using UnityGame.Assets.Modules.GameLogic.Scripts.Services;
 using UnityGame.Assets.Modules.UserSystem;
+using CameraSystem.Services;
 
 namespace picture_game_view.Assets.Modules.GameLogic.Scripts.Controllers
 {
@@ -291,18 +292,19 @@ namespace picture_game_view.Assets.Modules.GameLogic.Scripts.Controllers
 			// （Zキー押下: bestTileKey=列/行無視の最短 → fallbackTileKeyは使わない）
 			string targetTileKey = bestTileKey ?? fallbackTileKey;
 
-			// ========== ステップ5: 選択を実行 ==========
+			// ========== ステップ5: 移動可能距離をチェック ==========
+			// targetTileKeyの有無に関わらず、移動距離が0なら進めない
+			if (_remainingMoveDistance <= 0)
+			{
+				// 移動不可 - カメラシェイク
+				_cameraShaker.Shake(0.2f, 0.1f);
+				Debug.Log("移動可能距離が0です。これ以上進めません。");
+				return;
+			}
+
+			// ========== ステップ6: 選択を実行 ==========
 			if (targetTileKey != null)
 			{
-				// 移動可能距離をチェック
-				if (_remainingMoveDistance <= 0)
-				{
-					// 移動不可 - カメラシェイク
-					_cameraShaker.Shake(0.2f, 0.1f);
-					Debug.Log("移動可能距離が0です。これ以上進めません。");
-					return;
-				}
-
 				// 新しいタイルを選択
 				_currentSelectedTileKey = targetTileKey;
 

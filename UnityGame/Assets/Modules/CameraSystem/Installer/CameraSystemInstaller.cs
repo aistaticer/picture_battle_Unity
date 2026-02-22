@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 using Zenject;
 using UnityEngine;
 using picture_game_view.Assets.Modules.Shared;
+using CameraSystem.Services;
 
 public class CameraSystemInstaller : MonoInstaller
 {
@@ -12,5 +13,6 @@ public class CameraSystemInstaller : MonoInstaller
     {
         InstallerHelper.BindSO<CameraObjSet>(Container,ResourcesPath.ObjSetFolderPath);
         InstallerHelper.BindClass<CameraSystem.StartUp>(Container);
+        InstallerHelper.BindMono<CameraSystem.Services.CameraShaker>(Container);
     }
 }

@@ -25,7 +25,6 @@ public class GameLogicInstaller : MonoInstaller
         InstallerHelper.BindClass<TileActionService>(Container);
         InstallerHelper.BindClass<DisplayTileState>(Container);
         InstallerHelper.BindMono<MapController>(Container);
-        InstallerHelper.BindMono<CameraShaker>(Container);
         InstallerHelper.BindClass<TileLogicController>(Container);
 
         // GameStateController を IInitializable としてバインド

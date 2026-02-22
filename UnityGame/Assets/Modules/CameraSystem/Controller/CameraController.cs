@@ -24,6 +24,6 @@ public class CameraController : MonoBehaviour
 
 	void Update()
 	{
-		_mainCameraMover.Move(_cameraSystemContext.mainCameraState.Camera.transform);
+		// _mainCameraMover.Move(_cameraSystemContext.mainCameraState.Camera.transform);
 	}
 }
