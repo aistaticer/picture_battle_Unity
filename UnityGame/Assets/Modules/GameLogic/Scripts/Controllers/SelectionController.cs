@@ -135,12 +135,6 @@ namespace picture_game_view.Assets.Modules.GameLogic.Scripts.Controllers
 			{
 				CancelSelectionMode();
 			}
-
-			// Oキーでデバッグ情報を表示
-			if (Input.GetKeyDown(KeyCode.O))
-			{
-				LogDebugInfo();
-			}
 		}
 
 		/// <summary>
@@ -498,49 +492,6 @@ namespace picture_game_view.Assets.Modules.GameLogic.Scripts.Controllers
 
 			// チームに応じた色を返す
 			return playerInfo.TeamName == "TeamA" ? TileType.clickedTeamA : TileType.clickedTeamB;
-		}
-
-		/// <summary>
-		/// デバッグ情報をログに出力する（Oキーで呼び出される）
-		/// </summary>
-		private void LogDebugInfo()
-		{
-			Debug.Log("========== デバッグ情報 ==========");
-			Debug.Log($"現在選択中のタイル: {_currentSelectedTileKey}");
-			Debug.Log($"残りの移動可能距離: {_remainingMoveDistance}");
-
-			// 訪問済みタイルの情報
-			Debug.Log($"\n訪問済みタイル数: {_visitedTiles.Count}");
-			for (int i = 0; i < _visitedTiles.Count; i++)
-			{
-				var tileKey = _visitedTiles[i];
-				var tileData = _tileManager.GetTileData(tileKey);
-				var owner = _tileManager.GetOwnerInfo(tileKey);
-				Debug.Log($"  [{i}] {tileKey} - 位置:{tileData?.Position} - 所有者:{owner ?? "なし"}");
-			}
-
-			// 元の所有者情報
-			Debug.Log($"\n保存された元の所有者数: {_originalTileOwners.Count}");
-			foreach (var kvp in _originalTileOwners)
-			{
-				Debug.Log($"  {kvp.Key} -> 元の所有者:{(string.IsNullOrEmpty(kvp.Value) ? "なし" : kvp.Value)}");
-			}
-
-			// クリック可能タイルの情報
-			var clickableTiles = _tileManager.GetClickableTiles();
-			Debug.Log($"\nクリック可能タイル数: {clickableTiles.Count}");
-			foreach (var tileKey in clickableTiles)
-			{
-				var tileData = _tileManager.GetTileData(tileKey);
-				var owner = _tileManager.GetOwnerInfo(tileKey);
-				if (tileData != null)
-				{
-					var tileType = GetTileTypeFromOwner(owner ?? "");
-					Debug.Log($"  {tileKey} - 位置:{tileData.Position} - 所有者:{owner ?? "なし"} - 色:{tileType}");
-				}
-			}
-
-			Debug.Log("================================\n");
 		}
 
 		/// <summary>
