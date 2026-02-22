@@ -17,6 +17,16 @@ namespace UnityGame.Assets.Modules.GameLogic.Scripts.Services
         /// </summary>
         private List<GameObject> _displayedMarkers = new List<GameObject>();
 
+        /// <summary>
+        /// タイルキーとマーカーオブジェクトの対応関係
+        /// </summary>
+        private Dictionary<string, GameObject> _markerDictionary = new Dictionary<string, GameObject>();
+
+        /// <summary>
+        /// 現在選択中（ハイライト中）のマーカーオブジェクト
+        /// </summary>
+        private GameObject _currentHighlightedMarker = null;
+
         [Inject]
         public void Construct(TileManager tileManager)
         {
@@ -148,9 +158,10 @@ namespace UnityGame.Assets.Modules.GameLogic.Scripts.Services
             // プレハブをタイルと同じ位置にインスタンス化
             var marker = GameObject.Instantiate(_markerPrefab, tileData.Position.ToVector3(), Quaternion.identity);
             marker.name = $"ClickableMarker_{tileKey}";
-
-            // リストに追加
+            
+            // リストと辞書に追加
             _displayedMarkers.Add(marker);
+            _markerDictionary[tileKey] = marker;
         }
 
         /// <summary>
@@ -166,6 +177,61 @@ namespace UnityGame.Assets.Modules.GameLogic.Scripts.Services
                 }
             }
             _displayedMarkers.Clear();
+            _markerDictionary.Clear();
+            _currentHighlightedMarker = null;
+        }
+
+        /// <summary>
+        /// マーカーオブジェクトの透明度を設定する
+        /// </summary>
+        /// <param name="marker">マーカーオブジェクト</param>
+        /// <param name="alpha">透明度（0.0～1.0）</param>
+        private void SetMarkerAlpha(GameObject marker, float alpha)
+        {
+            if (marker == null)
+                return;
+
+            // マーカーのRendererコンポーネントを取得
+            var renderer = marker.GetComponent<Renderer>();
+            if (renderer != null && renderer.material != null)
+            {
+                // マテリアルの色を取得して透明度を変更
+                Color color = renderer.material.color;
+                color.a = alpha;
+                renderer.material.color = color;
+            }
+        }
+
+        /// <summary>
+        /// 指定されたタイルキーのマーカーをハイライトする（透明度を下げる）
+        /// </summary>
+        /// <param name="tileKey">ハイライトするタイルのキー</param>
+        public void HighlightMarker(string tileKey)
+        {
+            // 前のハイライトを解除
+            if (_currentHighlightedMarker != null)
+            {
+                SetMarkerAlpha(_currentHighlightedMarker, 0.3f); // 通常の透明度に戻す
+            }
+
+            // 新しいマーカーをハイライト
+            if (_markerDictionary.TryGetValue(tileKey, out GameObject marker))
+            {
+                SetMarkerAlpha(marker, 0.8f); // ハイライト時は不透明に近くする
+                _currentHighlightedMarker = marker;
+            }
+        }
+
+        /// <summary>
+        /// 現在のハイライトを解除する
+        /// </summary>
+        public void ClearHighlight()
+        {
+            if (_currentHighlightedMarker != null)
+            {
+                SetMarkerAlpha(_currentHighlightedMarker, 0.3f);
+                _currentHighlightedMarker = null;
+            }
         }
 
         /// <summary>

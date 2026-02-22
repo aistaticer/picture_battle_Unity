@@ -73,6 +73,9 @@ namespace picture_game_view.Assets.Modules.GameLogic.Scripts.Controllers
 			// 初期選択位置をプレイヤーの位置に設定
 			_currentSelectedTileKey = playerTileKey;
 
+			// 初期選択位置をハイライト
+			_displayTileState.HighlightMarker(playerTileKey);
+
 			// GameStateControllerで選択モードを開始
 			_gameStateController.StartSelection();
 		}
@@ -241,12 +244,9 @@ namespace picture_game_view.Assets.Modules.GameLogic.Scripts.Controllers
 			// ========== ステップ5: 選択を実行 ==========
 			if (targetTileKey != null)
 			{
-				// 前の選択を解除（色を元に戻す）
-				_displayTileState.ChangeClickableTileColor(_currentSelectedTileKey, TileType.Empty);
-
 				// 新しいタイルを選択してハイライト
 				_currentSelectedTileKey = targetTileKey;
-				_displayTileState.ChangeClickableTileColor(_currentSelectedTileKey, TileType.clickedTeamA);
+				_displayTileState.HighlightMarker(_currentSelectedTileKey);
 
 				Debug.Log($"選択移動: {targetTileKey}");
 			}
@@ -322,6 +322,9 @@ namespace picture_game_view.Assets.Modules.GameLogic.Scripts.Controllers
 		/// </summary>
 		private void EndSelectionMode()
 		{
+			// ハイライトをクリア
+			_displayTileState.ClearHighlight();
+
 			// マーカーをクリア
 			_displayTileState.ClearDisplayMarkers();
 			_tileManager.ClearClickableTiles();
