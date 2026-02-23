@@ -1,12 +1,9 @@
 {
-    "name": "PlayerSystem",
+    "name": "AudioSystem",
     "rootNamespace": "",
     "references": [
         "GUID:0d8beb7f090555447a6cf5ce9e54dbb4",
-        "GUID:e6507552c56374316b0b9154cf5be21a",
-        "GUID:d3283b646c8784289b08e8066bb92fac",
-        "GUID:5759d7be0a62242adb2ad8289d78656b",
-        "GUID:3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f"
+        "GUID:5759d7be0a62242adb2ad8289d78656b"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

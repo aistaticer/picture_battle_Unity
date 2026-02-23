@@ -94,6 +94,21 @@ public class PlayerManager
 	}
 
 	/// <summary>
+	/// UserIdに対応するプレイヤーのGameObjectを取得
+	/// </summary>
+	public GameObject GetPlayerGameObjectByUserId(string userId)
+	{
+		foreach (var kvp in _playerObjects)
+		{
+			if (kvp.Key.Info.UserId == userId)
+			{
+				return kvp.Value;
+			}
+		}
+		return null;
+	}
+
+	/// <summary>
 	/// UserIdに対応するプレイヤーオブジェクトを指定座標に移動させる
 	/// </summary>
 	/// <param name="userId">移動させるプレイヤーのUserId</param>

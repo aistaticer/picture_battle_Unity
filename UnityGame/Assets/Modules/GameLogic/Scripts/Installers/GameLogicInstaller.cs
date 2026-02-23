@@ -33,6 +33,9 @@ public class GameLogicInstaller : MonoInstaller
         // SelectionController を ITickable, IInitializable としてバインド
         Container.BindInterfacesAndSelfTo<SelectionController>().AsSingle();
 
+        // AIController を ITickable としてバインド（敵の自動移動）
+        Container.BindInterfacesAndSelfTo<AIController>().AsSingle();
+
         // PlayerManagerはPlayerSystemStartUpで動的に生成してバインドされる
     }
 }

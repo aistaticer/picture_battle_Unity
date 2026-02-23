@@ -54,16 +54,16 @@ namespace picture_game_view.Assets.Modules.GameLogic.Scripts.Controllers
 
 		public void Tick()
 		{
-			// 選択モードがアクティブでない場合のみ、スペースキーで選択モードを開始
-			if (_gameStateController.CanStartSelection() && Input.GetKeyDown(KeyCode.Space))
+			// Alice専用：選択モードがアクティブでない場合、スペースキーで選択モードを開始
+			// ターン制ではないため、いつでも移動可能
+			if (!IsSelectionModeActive && Input.GetKeyDown(KeyCode.Space))
 			{
-				// 現在のターンのプレイヤーで選択モードを開始
-				string currentPlayerId = _gameStateController.GetCurrentPlayerId();
-				StartSelectionMode(currentPlayerId);
+				// Alice（player001）の選択モードを開始（ターン制ではないためいつでも可能）
+				StartSelectionMode("player001");
 			}
 
-			// 選択モード中の処理
-			if (_gameStateController.GetCurrentState() == GameState.Selecting)
+			// 選択モード中の処理（Alice専用）
+			if (IsSelectionModeActive)
 			{
 				HandleArrowKeySelection();
 			}
@@ -152,8 +152,11 @@ namespace picture_game_view.Assets.Modules.GameLogic.Scripts.Controllers
 			if (_currentSelectedTileKey == null)
 				return;
 
-			// 移動中の場合は新しい移動を受け付けない
-			if (_playerMover != null && _playerMover.IsMoving)
+			// Alice（player001）のGameObjectを取得
+			var aliceGameObject = _playerManager.GetPlayerGameObjectByUserId("player001");
+
+			// Alice移動中の場合は新しい移動を受け付けない
+			if (aliceGameObject != null && _playerMover != null && _playerMover.IsMoving(aliceGameObject.transform))
 			{
 				Debug.Log("プレイヤー移動中のため、次の移動は待機してください");
 				return;
