@@ -28,6 +28,11 @@ namespace picture_game_view.Assets.Modules.GameLogic.Scripts
                 .ToMethod<TileLogicController>(x => x.OnTileClicked)
                 .FromResolve();
 
+            // PlayerMovedSignalが発火したらGhostTouchAbility.OnPlayerMovedメソッドを自動的に呼ぶ
+            Container.BindSignal<PlayerMovedSignal>()
+                .ToMethod<UnityGame.Assets.Modules.GameLogic.Scripts.Services.GhostTouchAbility>(x => x.OnPlayerMoved)
+                .FromResolve();
+
             // ITickable リストに登録
             // InputController.Tick() が毎フレーム呼ばれるようにする
             Container.BindInterfacesAndSelfTo<InputController>().AsSingle();

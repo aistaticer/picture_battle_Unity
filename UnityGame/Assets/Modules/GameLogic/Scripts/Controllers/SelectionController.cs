@@ -18,6 +18,7 @@ namespace picture_game_view.Assets.Modules.GameLogic.Scripts.Controllers
 		private readonly GameStateController _gameStateController;
 		private readonly CameraShaker _cameraShaker;
 		private readonly PlayerMover _playerMover;
+		private readonly SignalBus _signalBus;
 
 		// 現在選択中のタイルキー
 		private string _currentSelectedTileKey = null;
@@ -37,7 +38,8 @@ namespace picture_game_view.Assets.Modules.GameLogic.Scripts.Controllers
 			TileManager tileManager,
 			GameStateController gameStateController,
 			CameraShaker cameraShaker,
-			PlayerMover playerMover)
+			PlayerMover playerMover,
+			SignalBus signalBus)
 		{
 			_playerManager = playerManager;
 			_displayTileState = displayTileState;
@@ -45,6 +47,7 @@ namespace picture_game_view.Assets.Modules.GameLogic.Scripts.Controllers
 			_gameStateController = gameStateController;
 			_cameraShaker = cameraShaker;
 			_playerMover = playerMover;
+			_signalBus = signalBus;
 		}
 
 		public void Initialize()
@@ -332,6 +335,13 @@ namespace picture_game_view.Assets.Modules.GameLogic.Scripts.Controllers
 				string currentPlayerId = _gameStateController.GetCurrentPlayerId();
 				_playerManager.MovePlayerToTileKeyWithDirection(currentPlayerId, targetTileKey, direction);
 
+				// プレイヤー移動シグナルを発火（移動中のタイル選択時）
+				var playerPosition = _playerManager.GetPlayerPositionByUserId(currentPlayerId);
+				if (playerPosition.HasValue)
+				{
+					_signalBus.Fire(new PlayerMovedSignal(currentPlayerId, targetTileKey, playerPosition.Value));
+				}
+
 				// 新しいタイルを選択
 				_currentSelectedTileKey = targetTileKey;
 
@@ -432,6 +442,13 @@ namespace picture_game_view.Assets.Modules.GameLogic.Scripts.Controllers
 			// プレイヤーを戻り先のタイルに移動させる（進行方向を向く）
 			string currentPlayerId = _gameStateController.GetCurrentPlayerId();
 			_playerManager.MovePlayerToTileKeyWithDirection(currentPlayerId, targetTileKey, direction);
+
+			// プレイヤー移動シグナルを発火（Backspace時のタイル選択）
+			var playerPosition = _playerManager.GetPlayerPositionByUserId(currentPlayerId);
+			if (playerPosition.HasValue)
+			{
+				_signalBus.Fire(new PlayerMovedSignal(currentPlayerId, targetTileKey, playerPosition.Value));
+			}
 
 			// 選択を更新
 			_currentSelectedTileKey = targetTileKey;

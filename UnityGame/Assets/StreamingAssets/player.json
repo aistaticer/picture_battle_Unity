@@ -4,13 +4,15 @@
     "teamName": "TeamA",
     "userId": "player001",
     "modelType": "Ghost",
-		"position": { "x": 4, "y": 0, "z": 6 }
+		"position": { "x": 4, "y": 0, "z": 6 },
+    "ability": "GhostTouch"
   },
   {
     "userName": "Bob",
     "teamName": "TeamB",
     "userId": "player002",
     "modelType": "Cube",
-		"position": { "x": 6, "y": 0, "z": 3 }
+		"position": { "x": 6, "y": 0, "z": 3 },
+    "ability": ""
   }
 ]

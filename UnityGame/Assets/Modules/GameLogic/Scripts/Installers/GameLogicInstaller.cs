@@ -19,6 +19,7 @@ public class GameLogicInstaller : MonoInstaller
 
         // シグナル型の登録
         Container.DeclareSignal<TileClickedSignal>();
+        Container.DeclareSignal<PlayerMovedSignal>();
 
         InstallerHelper.BindClass<StartUp>(Container);
         InstallerHelper.BindClass<TileSpawner>(Container);
@@ -32,6 +33,9 @@ public class GameLogicInstaller : MonoInstaller
 
         // SelectionController を ITickable, IInitializable としてバインド
         Container.BindInterfacesAndSelfTo<SelectionController>().AsSingle();
+
+        // GhostTouchAbility をバインド（アビリティシステム、Signal駆動、クールダウン管理）
+        Container.Bind<GhostTouchAbility>().AsSingle();
 
         // AIController を ITickable としてバインド（敵の自動移動）
         Container.BindInterfacesAndSelfTo<AIController>().AsSingle();
