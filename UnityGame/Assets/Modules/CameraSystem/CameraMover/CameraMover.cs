@@ -6,41 +6,74 @@ using Unity.VisualScripting;
 public class CameraMover : ICameraMover
 {
     private readonly float _speed;
+    private readonly float _followSpeed = 10f; // カメラの追従速度
 
     private readonly CoroutineRunner _runner;
+    private readonly PlayerManager _playerManager;
 
     private Coroutine _moveCoroutine;
+    private Vector3 _offset; // Aliceとカメラの初期オフセット
+    private Vector3 _initialAlicePosition; // Aliceの初期位置
+    private bool _offsetInitialized = false;
+
+    private const string ALICE_USER_ID = "player001";
+    private const float Z_FOLLOW_RATIO = 0.5f; // Z軸の追従比率（調整可能）
 
     [Inject]
-    public CameraMover(CoroutineRunner runner,float speed = 5f)
+    public CameraMover(CoroutineRunner runner, PlayerManager playerManager, float speed = 5f)
     {
         _speed = speed;
         _runner = runner;
+        _playerManager = playerManager;
     }
+    
 
-    public void Move(Transform transform)
+    public void Move(Transform cameraTransform)
     {
+        // Aliceの現在位置を取得
+        var alicePosition = _playerManager.GetPlayerPositionByUserId(ALICE_USER_ID);
+        if (alicePosition == null)
+            return;
 
-        float horizontal = Input.GetAxisRaw("Horizontal"); // ← →
-        float vertical = Input.GetAxisRaw("Vertical");     // ↑ ↓
-        float moveSpeed = 5f;
+        // 初回のみ：カメラとAliceの初期オフセットと初期位置を記録
+        if (!_offsetInitialized)
+        {
+            _offset = cameraTransform.position - alicePosition.Value;
+            _initialAlicePosition = alicePosition.Value;
+            _offsetInitialized = true;
 
-        Vector3 direction = Vector3.zero;
+            // 初期位置でAliceのX軸と合わせる（カメラのX位置をAliceと同じにする）
+            Vector3 initialPosition = cameraTransform.position;
+            initialPosition.x = alicePosition.Value.x;
+            cameraTransform.position = initialPosition;
 
-        // 左右 = X軸
-        direction.x = horizontal;
+            // X軸のオフセットを0にする（完全に同じX位置から開始）
+            _offset.x = 0;
+        }
 
-        // 前後 = Z軸（ここに上下キーを割り当てる）
-        direction.z = vertical;
+        // X軸は完全追従、Z軸は移動量の半分で追従、Y軸は固定
+        Vector3 currentPosition = cameraTransform.position;
 
-        // 高さ = Y軸（ここは別のキーで動かす例）
-        if (Input.GetKey(KeyCode.Space))  // スペースで上昇
-            direction.y = 1;
-        else if (Input.GetKey(KeyCode.LeftShift)) // シフトで下降
-            direction.y = -1;
+        // Aliceの移動量を計算
+        float aliceZMovement = alicePosition.Value.z - _initialAlicePosition.z;
 
-        // 実際に動かす
-        transform.Translate(direction.normalized * moveSpeed * Time.deltaTime, Space.World);
+        // カメラの目標位置を計算（X軸はオフセット0なのでAliceと同じ位置）
+        float targetX = alicePosition.Value.x;
+        float targetZ = _initialAlicePosition.z + _offset.z + (aliceZMovement * Z_FOLLOW_RATIO);
+
+        // X軸とZ軸を滑らかに追従（Y軸は変更しない）
+        currentPosition.x = Mathf.Lerp(
+            currentPosition.x,
+            targetX,
+            _followSpeed * Time.deltaTime
+        );
+        currentPosition.z = Mathf.Lerp(
+            currentPosition.z,
+            targetZ,
+            _followSpeed * Time.deltaTime
+        );
+
+        cameraTransform.position = currentPosition;
     }
 
     public void MoveTo(GameObject obj, Vector3 targetPosition, float duration)

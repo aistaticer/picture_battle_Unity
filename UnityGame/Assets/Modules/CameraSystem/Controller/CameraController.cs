@@ -7,23 +7,35 @@ public class CameraController : MonoBehaviour
 	private CameraMover _mainCameraMover;
 	private CameraMover _subCameraMover;
 
-	[Inject]
-	CameraSystemContext _cameraSystemContext;
+	private CameraSystemContext _cameraSystemContext;
+	private PlayerManager _playerManager;
 
-	public CameraController(CameraSystemContext cameraSystemContext)
+	private CoroutineRunner _mainCoroutineRunner;
+	private CoroutineRunner _subCoroutineRunner;
+
+	[Inject]
+	public void Construct(CameraSystemContext cameraSystemContext, PlayerManager playerManager)
 	{
 		_cameraSystemContext = cameraSystemContext;
+		_playerManager = playerManager;
 	}
 
-	void Awake()
+	void Start()
 	{
-		_mainCameraMover = new CameraMover(new CoroutineRunner());
-		_subCameraMover = new CameraMover(new CoroutineRunner());
+		// CoroutineRunner用のGameObjectを作成
+		var mainRunnerObj = new GameObject("MainCameraCoroutineRunner");
+		_mainCoroutineRunner = mainRunnerObj.AddComponent<CoroutineRunner>();
 
+		var subRunnerObj = new GameObject("SubCameraCoroutineRunner");
+		_subCoroutineRunner = subRunnerObj.AddComponent<CoroutineRunner>();
+
+		// CameraMoverを作成（依存性を渡す）
+		_mainCameraMover = new CameraMover(_mainCoroutineRunner, _playerManager);
+		_subCameraMover = new CameraMover(_subCoroutineRunner, _playerManager);
 	}
 
 	void Update()
 	{
-		// _mainCameraMover.Move(_cameraSystemContext.mainCameraState.Camera.transform);
+		_mainCameraMover.Move(_cameraSystemContext.mainCameraState.Camera.transform);
 	}
 }
