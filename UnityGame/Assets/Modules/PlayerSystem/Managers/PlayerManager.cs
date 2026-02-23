@@ -236,5 +236,74 @@ public class PlayerManager
 		}
 	}
 
+	/// <summary>
+	/// 全プレイヤーのPlayerStateを取得
+	/// </summary>
+	public List<PlayerState> GetAllPlayers()
+	{
+		return new List<PlayerState>(_playerObjects.Keys);
+	}
+
+	/// <summary>
+	/// 全プレイヤーのUserIdを取得
+	/// </summary>
+	public List<string> GetAllPlayerUserIds()
+	{
+		var userIds = new List<string>();
+		foreach (var kvp in _playerObjects)
+		{
+			if (kvp.Key.Info.UserId != null)
+			{
+				userIds.Add(kvp.Key.Info.UserId);
+			}
+		}
+		return userIds;
+	}
+
+	/// <summary>
+	/// UserIdに対応するPlayerStateを取得
+	/// </summary>
+	public PlayerState GetPlayerStateByUserId(string userId)
+	{
+		foreach (var kvp in _playerObjects)
+		{
+			if (kvp.Key.Info.UserId == userId)
+			{
+				return kvp.Key;
+			}
+		}
+		return null;
+	}
+
+	/// <summary>
+	/// 指定されたプレイヤーの状態を設定
+	/// </summary>
+	public void SetPlayerState(string userId, PlayerActionState newState)
+	{
+		var playerState = GetPlayerStateByUserId(userId);
+		if (playerState != null)
+		{
+			playerState.SetState(newState);
+		}
+		else
+		{
+			Debug.LogWarning($"UserId {userId} のプレイヤーが見つかりません（SetPlayerState）");
+		}
+	}
+
+	/// <summary>
+	/// 指定されたプレイヤーの状態を取得
+	/// </summary>
+	public PlayerActionState GetPlayerActionState(string userId)
+	{
+		var playerState = GetPlayerStateByUserId(userId);
+		if (playerState != null)
+		{
+			return playerState.State;
+		}
+		Debug.LogWarning($"UserId {userId} のプレイヤーが見つかりません（GetPlayerActionState）");
+		return PlayerActionState.Idle;
+	}
+
 }
 

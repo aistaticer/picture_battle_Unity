@@ -34,8 +34,12 @@ public class GameLogicInstaller : MonoInstaller
         // SelectionController を ITickable, IInitializable としてバインド
         Container.BindInterfacesAndSelfTo<SelectionController>().AsSingle();
 
-        // GhostTouchAbility をバインド（アビリティシステム、Signal駆動、クールダウン管理）
-        Container.Bind<GhostTouchAbility>().AsSingle();
+        // アビリティシステムのバインド
+        // GhostTouchAbilityをバインド（具象型 + IPlayerAbilityインターフェース）
+        Container.BindInterfacesAndSelfTo<GhostTouchAbility>().AsSingle();
+
+        // AbilityManagerをバインド（全アビリティを統括管理）
+        Container.Bind<AbilityManager>().AsSingle();
 
         // AIController を ITickable としてバインド（敵の自動移動）
         Container.BindInterfacesAndSelfTo<AIController>().AsSingle();

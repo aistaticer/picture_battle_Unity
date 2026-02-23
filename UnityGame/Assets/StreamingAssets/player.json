@@ -5,7 +5,7 @@
     "userId": "player001",
     "modelType": "Ghost",
 		"position": { "x": 4, "y": 0, "z": 6 },
-    "ability": "GhostTouch"
+    "abilities": ["GhostTouch"]
   },
   {
     "userName": "Bob",
@@ -13,6 +13,6 @@
     "userId": "player002",
     "modelType": "Cube",
 		"position": { "x": 6, "y": 0, "z": 3 },
-    "ability": ""
+    "abilities": []
   }
 ]

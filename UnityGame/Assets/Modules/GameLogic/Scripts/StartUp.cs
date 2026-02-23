@@ -28,9 +28,10 @@ namespace picture_game_view.Assets.Modules.GameLogic.Scripts
                 .ToMethod<TileLogicController>(x => x.OnTileClicked)
                 .FromResolve();
 
-            // PlayerMovedSignalが発火したらGhostTouchAbility.OnPlayerMovedメソッドを自動的に呼ぶ
+            // PlayerMovedSignalが発火したらAbilityManager.OnPlayerMovedメソッドを自動的に呼ぶ
+            // AbilityManagerが各プレイヤーのアビリティをチェックして該当アビリティを実行
             Container.BindSignal<PlayerMovedSignal>()
-                .ToMethod<UnityGame.Assets.Modules.GameLogic.Scripts.Services.GhostTouchAbility>(x => x.OnPlayerMoved)
+                .ToMethod<UnityGame.Assets.Modules.GameLogic.Scripts.Services.AbilityManager>(x => x.OnPlayerMoved)
                 .FromResolve();
 
             // ITickable リストに登録

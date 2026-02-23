@@ -1,5 +1,6 @@
 using UnityEngine;
 using System.Collections;
+using System;
 
 namespace UnityGame.Assets.Modules.GameLogic.Scripts.Effects
 {
@@ -13,6 +14,7 @@ namespace UnityGame.Assets.Modules.GameLogic.Scripts.Effects
         private float _stunEndTime = 0f;
         private Vector3 _originalPosition;
         private Coroutine _shakeCoroutine;
+        private Action _onStunEnd;
 
         /// <summary>
         /// スタン中かどうか
@@ -24,11 +26,13 @@ namespace UnityGame.Assets.Modules.GameLogic.Scripts.Effects
         /// </summary>
         /// <param name="duration">スタン時間（秒）</param>
         /// <param name="shakeIntensity">震えの強さ</param>
-        public void ApplyStun(float duration, float shakeIntensity = 0.1f)
+        /// <param name="onStunEnd">スタン終了時のコールバック</param>
+        public void ApplyStun(float duration, float shakeIntensity = 0.1f, Action onStunEnd = null)
         {
             _isStunned = true;
             _stunEndTime = Time.time + duration;
             _originalPosition = transform.position;
+            _onStunEnd = onStunEnd;
 
             // 既存の震えを停止
             if (_shakeCoroutine != null)
@@ -49,8 +53,8 @@ namespace UnityGame.Assets.Modules.GameLogic.Scripts.Effects
             while (elapsed < duration)
             {
                 // ランダムな方向に少し震える
-                float offsetX = Random.Range(-intensity, intensity);
-                float offsetZ = Random.Range(-intensity, intensity);
+                float offsetX = UnityEngine.Random.Range(-intensity, intensity);
+                float offsetZ = UnityEngine.Random.Range(-intensity, intensity);
 
                 transform.position = _originalPosition + new Vector3(offsetX, 0, offsetZ);
 
@@ -61,6 +65,9 @@ namespace UnityGame.Assets.Modules.GameLogic.Scripts.Effects
             // 元の位置に戻す
             transform.position = _originalPosition;
             _isStunned = false;
+
+            // スタン終了コールバックを呼ぶ
+            _onStunEnd?.Invoke();
 
             Debug.Log($"{gameObject.name} のスタンが解除されました");
         }
@@ -80,6 +87,9 @@ namespace UnityGame.Assets.Modules.GameLogic.Scripts.Effects
                 }
                 transform.position = _originalPosition;
                 _isStunned = false;
+
+                // スタン終了コールバックを呼ぶ
+                _onStunEnd?.Invoke();
             }
         }
     }

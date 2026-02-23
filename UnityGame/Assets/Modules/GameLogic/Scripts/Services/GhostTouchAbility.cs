@@ -1,6 +1,7 @@
 using UnityEngine;
 using Zenject;
 using UnityGame.Assets.Modules.GameLogic.Scripts.Effects;
+using System.Collections.Generic;
 
 namespace UnityGame.Assets.Modules.GameLogic.Scripts.Services
 {
@@ -15,25 +16,28 @@ namespace UnityGame.Assets.Modules.GameLogic.Scripts.Services
 
     /// <summary>
     /// GhostTouchアビリティ
-    /// Aliceが敵と同じタイルに移動すると、敵を1秒間スタンさせる
+    /// "GhostTouch"アビリティを持つプレイヤーが敵と同じタイルに移動すると、敵をスタンさせる
     /// 15秒のクールダウンあり
     /// </summary>
-    public class GhostTouchAbility
+    public class GhostTouchAbility : IPlayerAbility
     {
         private readonly PlayerManager _playerManager;
         private readonly TileManager _tileManager;
 
-        private const string ALICE_USER_ID = "player001";
-        private const string BOB_USER_ID = "player002";
         private const float STUN_DURATION = 2.0f;
         private const float SHAKE_INTENSITY = 0.1f;
         private const float COOLDOWN_DURATION = 15.0f; // 15秒クールダウン
 
-        private StunEffect _bobStunEffect = null;
+        // プレイヤーごとのStunEffectキャッシュ
+        private readonly Dictionary<string, StunEffect> _stunEffects = new Dictionary<string, StunEffect>();
 
-        // アビリティの状態管理
-        private GhostTouchState _state = GhostTouchState.Ready;
-        private float _cooldownEndTime = 0f;
+        // プレイヤーごとのクールダウン管理
+        private readonly Dictionary<string, float> _cooldownEndTimes = new Dictionary<string, float>();
+
+        /// <summary>
+        /// アビリティ名（IPlayerAbilityインターフェース実装）
+        /// </summary>
+        public string AbilityName => "GhostTouch";
 
         [Inject]
         public GhostTouchAbility(PlayerManager playerManager, TileManager tileManager)
@@ -43,22 +47,19 @@ namespace UnityGame.Assets.Modules.GameLogic.Scripts.Services
         }
 
         /// <summary>
-        /// プレイヤー移動シグナルのハンドラ
+        /// プレイヤー移動シグナルのハンドラ（IPlayerAbilityインターフェース実装）
+        /// AbilityManagerから呼ばれる（アビリティ所持チェックはAbilityManagerが行う）
         /// </summary>
         public void OnPlayerMoved(PlayerMovedSignal signal)
         {
-            // Aliceが移動した時のみチェック
-            if (signal.UserId != ALICE_USER_ID)
-                return;
-
             // クールダウン中は発動しない
-            if (_state == GhostTouchState.Cooldown)
+            if (IsOnCooldown(signal.UserId))
             {
                 // クールダウン解除チェック
-                if (Time.time >= _cooldownEndTime)
+                if (Time.time >= _cooldownEndTimes[signal.UserId])
                 {
-                    _state = GhostTouchState.Ready;
-                    Debug.Log("【GhostTouch】クールダウン解除！再発動可能");
+                    _cooldownEndTimes.Remove(signal.UserId);
+                    Debug.Log($"【GhostTouch】{signal.UserId} のクールダウン解除！再発動可能");
                 }
                 else
                 {
@@ -67,65 +68,82 @@ namespace UnityGame.Assets.Modules.GameLogic.Scripts.Services
                 }
             }
 
-            // Bobの現在のタイルキーを取得
-            string bobTileKey = _playerManager.GetPlayerTileKeyByUserId(BOB_USER_ID);
-            if (bobTileKey == null)
-                return;
-
-            // Aliceと同じタイルにいるかチェック
-            if (signal.TileKey == bobTileKey)
+            // 全プレイヤーをチェックして同じタイルにいる敵を探す
+            var allPlayers = _playerManager.GetAllPlayers();
+            foreach (var targetPlayer in allPlayers)
             {
-                TriggerGhostTouch();
+                // 自分自身はスキップ
+                if (targetPlayer.Info.UserId == signal.UserId)
+                    continue;
+
+                // 同じタイルにいるかチェック
+                string targetTileKey = _playerManager.GetPlayerTileKeyByUserId(targetPlayer.Info.UserId);
+                if (targetTileKey == signal.TileKey)
+                {
+                    // 敵を発見！GhostTouchを発動
+                    TriggerGhostTouch(signal.UserId, targetPlayer.Info.UserId);
+                }
             }
+        }
+
+        /// <summary>
+        /// クールダウン中かチェック
+        /// </summary>
+        private bool IsOnCooldown(string userId)
+        {
+            return _cooldownEndTimes.ContainsKey(userId) && Time.time < _cooldownEndTimes[userId];
         }
 
         /// <summary>
         /// GhostTouchアビリティを発動
         /// </summary>
-        private void TriggerGhostTouch()
+        private void TriggerGhostTouch(string attackerUserId, string targetUserId)
         {
-            Debug.Log($"【GhostTouch発動】Aliceが敵と同じタイルに到達！（次回発動まで{COOLDOWN_DURATION}秒）");
+            Debug.Log($"【GhostTouch発動】{attackerUserId} が {targetUserId} と同じタイルに到達！（次回発動まで{COOLDOWN_DURATION}秒）");
 
-            // BobのGameObjectを取得
-            var bobGameObject = _playerManager.GetPlayerGameObjectByUserId(BOB_USER_ID);
-            if (bobGameObject == null)
+            // ターゲットのGameObjectを取得
+            var targetGameObject = _playerManager.GetPlayerGameObjectByUserId(targetUserId);
+            if (targetGameObject == null)
             {
-                Debug.LogWarning("BobのGameObjectが見つかりません");
+                Debug.LogWarning($"{targetUserId} のGameObjectが見つかりません");
                 return;
             }
 
-            // StunEffectコンポーネントを取得または追加
-            if (_bobStunEffect == null)
+            // StunEffectコンポーネントを取得または追加（キャッシュ）
+            if (!_stunEffects.ContainsKey(targetUserId))
             {
-                _bobStunEffect = bobGameObject.GetComponent<StunEffect>();
-                if (_bobStunEffect == null)
+                var stunEffect = targetGameObject.GetComponent<StunEffect>();
+                if (stunEffect == null)
                 {
-                    _bobStunEffect = bobGameObject.AddComponent<StunEffect>();
+                    stunEffect = targetGameObject.AddComponent<StunEffect>();
                 }
+                _stunEffects[targetUserId] = stunEffect;
             }
 
-            // スタン効果を適用
-            _bobStunEffect.ApplyStun(STUN_DURATION, SHAKE_INTENSITY);
+            // プレイヤーの状態をStunnedに変更
+            _playerManager.SetPlayerState(targetUserId, PlayerActionState.Stunned);
 
-            // クールダウン状態に移行
-            _state = GhostTouchState.Cooldown;
-            _cooldownEndTime = Time.time + COOLDOWN_DURATION;
+            // スタン効果を適用（ビジュアル）
+            // スタン終了時にIdleに戻すコールバックを渡す
+            _stunEffects[targetUserId].ApplyStun(STUN_DURATION, SHAKE_INTENSITY, () =>
+            {
+                // スタン終了時、状態をIdleに戻す
+                _playerManager.SetPlayerState(targetUserId, PlayerActionState.Idle);
+            });
+
+            // アビリティ使用者のクールダウン開始
+            _cooldownEndTimes[attackerUserId] = Time.time + COOLDOWN_DURATION;
         }
 
         /// <summary>
-        /// 現在の状態を取得
+        /// 指定されたプレイヤーのクールダウン残り時間を取得
         /// </summary>
-        public GhostTouchState GetState() => _state;
-
-        /// <summary>
-        /// クールダウンの残り時間を取得
-        /// </summary>
-        public float GetCooldownRemaining()
+        public float GetCooldownRemaining(string userId)
         {
-            if (_state != GhostTouchState.Cooldown)
+            if (!IsOnCooldown(userId))
                 return 0f;
 
-            return Mathf.Max(0f, _cooldownEndTime - Time.time);
+            return Mathf.Max(0f, _cooldownEndTimes[userId] - Time.time);
         }
 
         /// <summary>
@@ -133,13 +151,8 @@ namespace UnityGame.Assets.Modules.GameLogic.Scripts.Services
         /// </summary>
         public bool IsPlayerStunned(string userId)
         {
-            if (userId != BOB_USER_ID)
-                return false;
-
-            if (_bobStunEffect == null)
-                return false;
-
-            return _bobStunEffect.IsStunned;
+            // PlayerManagerから状態を取得
+            return _playerManager.GetPlayerActionState(userId) == PlayerActionState.Stunned;
         }
     }
 }

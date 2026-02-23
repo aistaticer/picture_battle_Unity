@@ -15,7 +15,6 @@ namespace picture_game_view.Assets.Modules.GameLogic.Scripts.Controllers
 		private readonly TileManager _tileManager;
 		private readonly PlayerMover _playerMover;
 		private readonly TileActionService _tileActionService;
-		private readonly GhostTouchAbility _ghostTouchAbility;
 
 		private const string AI_PLAYER_ID = "player002"; // Bob
 		private const int MAX_MOVE_DISTANCE = 4;
@@ -39,20 +38,19 @@ namespace picture_game_view.Assets.Modules.GameLogic.Scripts.Controllers
 			PlayerManager playerManager,
 			TileManager tileManager,
 			PlayerMover playerMover,
-			TileActionService tileActionService,
-			GhostTouchAbility ghostTouchAbility)
+			TileActionService tileActionService)
 		{
 			_playerManager = playerManager;
 			_tileManager = tileManager;
 			_playerMover = playerMover;
 			_tileActionService = tileActionService;
-			_ghostTouchAbility = ghostTouchAbility;
 		}
 
 		public void Tick()
 		{
-			// スタン中は移動しない
-			if (_ghostTouchAbility.IsPlayerStunned(AI_PLAYER_ID))
+			// スタン中は移動しない（状態システムを使用）
+			var playerState = _playerManager.GetPlayerActionState(AI_PLAYER_ID);
+			if (playerState == PlayerActionState.Stunned)
 			{
 				return;
 			}
