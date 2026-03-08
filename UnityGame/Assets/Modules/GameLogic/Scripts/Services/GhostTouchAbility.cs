@@ -120,6 +120,25 @@ namespace UnityGame.Assets.Modules.GameLogic.Scripts.Services
                 _stunEffects[targetUserId] = stunEffect;
             }
 
+            // GhostTouchエフェクトを表示（右上に配置）
+            var effectPrefab = Resources.Load<GameObject>("Effect/GhostTouchEffect");
+            if (effectPrefab != null)
+            {
+                // ターゲットの右上にエフェクトを配置（オフセット: X+1, Y+1）
+                Vector3 effectPosition = targetGameObject.transform.position + new Vector3(1f, 1f, 0f);
+                // Z軸で180度回転
+                var effectInstance = GameObject.Instantiate(effectPrefab, effectPosition, Quaternion.Euler(0, 0, 180));
+
+                // スタン時間後に自動削除
+                GameObject.Destroy(effectInstance, STUN_DURATION);
+
+                Debug.Log($"【GhostTouch】エフェクト表示: {targetUserId}");
+            }
+            else
+            {
+                Debug.LogWarning("GhostTouchEffect プレハブが見つかりません: Resources/Effect/GhostTouchEffect");
+            }
+
             // プレイヤーの状態をStunnedに変更
             _playerManager.SetPlayerState(targetUserId, PlayerActionState.Stunned);
 
