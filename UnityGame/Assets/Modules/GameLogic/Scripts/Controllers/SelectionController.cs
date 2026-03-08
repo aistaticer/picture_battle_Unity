@@ -26,6 +26,10 @@ namespace picture_game_view.Assets.Modules.GameLogic.Scripts.Controllers
 		// 残りの移動可能距離
 		private int _remainingMoveDistance = 0;
 
+		// 移動距離の範囲
+		private const int MIN_MOVE_DISTANCE = 1;
+		private const int MAX_MOVE_DISTANCE = 5;
+
 		// 訪問したタイルのリスト（通った経路を記録）
 		private List<string> _visitedTiles = new List<string>();
 
@@ -87,10 +91,12 @@ namespace picture_game_view.Assets.Modules.GameLogic.Scripts.Controllers
 				return;
 			}
 
-			// 移動可能距離と訪問済みリストを初期化
-			_remainingMoveDistance = 4;
+			// 移動可能距離をランダムに設定（1～5）
+			_remainingMoveDistance = Random.Range(MIN_MOVE_DISTANCE, MAX_MOVE_DISTANCE + 1);
 			_visitedTiles.Clear();
 			_visitedTiles.Add(playerTileKey); // 開始位置を訪問済みに追加
+
+			Debug.Log($"【選択開始】移動可能距離: {_remainingMoveDistance}");
 
 			// プレイヤーの位置から移動可能な範囲を表示
 			_displayTileState.DisplayClicableTile(playerTileKey, _remainingMoveDistance);

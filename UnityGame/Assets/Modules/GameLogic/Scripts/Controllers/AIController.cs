@@ -17,7 +17,8 @@ namespace picture_game_view.Assets.Modules.GameLogic.Scripts.Controllers
 		private readonly TileActionService _tileActionService;
 
 		private const string AI_PLAYER_ID = "player002"; // Bob
-		private const int MAX_MOVE_DISTANCE = 4;
+		private const int MIN_MOVE_DISTANCE = 1;
+		private const int MAX_MOVE_DISTANCE = 5;
 		private const float MOVE_INTERVAL = 3.0f; // 3秒ごとに移動を試みる
 
 		private float _moveTimer = 0f;
@@ -90,8 +91,11 @@ namespace picture_game_view.Assets.Modules.GameLogic.Scripts.Controllers
 				return;
 			}
 
+			// ランダムな移動距離を決定（1～5）
+			int randomMoveDistance = Random.Range(MIN_MOVE_DISTANCE, MAX_MOVE_DISTANCE + 1);
+
 			// 移動可能な範囲内のタイルを取得
-			var reachableTiles = GetReachableTiles(currentTileKey, MAX_MOVE_DISTANCE);
+			var reachableTiles = GetReachableTiles(currentTileKey, randomMoveDistance);
 			if (reachableTiles.Count == 0)
 			{
 				Debug.Log("AIの移動可能なタイルがありません");
@@ -114,7 +118,7 @@ namespace picture_game_view.Assets.Modules.GameLogic.Scripts.Controllers
 			_currentPathIndex = 1;
 			_isExecutingMove = true;
 
-			Debug.Log($"AI移動開始: {currentTileKey} → {targetTileKey} (経路長: {_currentPath.Count})");
+			Debug.Log($"AI移動開始: {currentTileKey} → {targetTileKey} (経路長: {_currentPath.Count}, 最大距離: {randomMoveDistance})");
 
 			// 最初の移動を開始
 			MoveToNextTileInPath();

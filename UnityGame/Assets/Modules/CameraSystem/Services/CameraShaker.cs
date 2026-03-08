@@ -10,21 +10,12 @@ namespace CameraSystem.Services
     public class CameraShaker : MonoBehaviour
     {
         private CameraSystemContext _cameraSystemContext;
-        private Vector3 _originalPosition;
         private bool _isShaking = false;
 
         [Inject]
         public void Construct(CameraSystemContext cameraSystemContext)
         {
             _cameraSystemContext = cameraSystemContext;
-        }
-
-        private void Start()
-        {
-            if (_cameraSystemContext?.mainCameraState?.Camera != null)
-            {
-                _originalPosition = _cameraSystemContext.mainCameraState.Camera.transform.localPosition;
-            }
         }
 
         /// <summary>
@@ -47,18 +38,22 @@ namespace CameraSystem.Services
 
             var cameraTransform = _cameraSystemContext.mainCameraState.Camera.transform;
 
+            // shake開始時の現在位置を保存（追従後の位置）
+            Vector3 originalPosition = cameraTransform.localPosition;
+
             while (elapsed < duration)
             {
                 float x = Random.Range(-1f, 1f) * magnitude;
                 float y = Random.Range(-1f, 1f) * magnitude;
 
-                cameraTransform.localPosition = _originalPosition + new Vector3(x, y, 0);
+                cameraTransform.localPosition = originalPosition + new Vector3(x, y, 0);
 
                 elapsed += Time.deltaTime;
                 yield return null;
             }
 
-            cameraTransform.localPosition = _originalPosition;
+            // shake終了後、開始時の位置に戻す
+            cameraTransform.localPosition = originalPosition;
             _isShaking = false;
         }
     }
