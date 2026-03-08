@@ -305,5 +305,65 @@ public class PlayerManager
 		return PlayerActionState.Idle;
 	}
 
+	/// <summary>
+	/// アビリティのクールダウンを設定
+	/// </summary>
+	public void SetAbilityCooldown(string userId, string abilityName, float cooldownEndTime)
+	{
+		var playerState = GetPlayerStateByUserId(userId);
+		if (playerState != null)
+		{
+			playerState.SetAbilityCooldown(abilityName, cooldownEndTime);
+		}
+		else
+		{
+			Debug.LogWarning($"UserId {userId} のプレイヤーが見つかりません（SetAbilityCooldown）");
+		}
+	}
+
+	/// <summary>
+	/// アビリティがクールダウン中かチェック
+	/// </summary>
+	public bool IsAbilityOnCooldown(string userId, string abilityName)
+	{
+		var playerState = GetPlayerStateByUserId(userId);
+		if (playerState != null)
+		{
+			return playerState.IsAbilityOnCooldown(abilityName);
+		}
+		Debug.LogWarning($"UserId {userId} のプレイヤーが見つかりません（IsAbilityOnCooldown）");
+		return false;
+	}
+
+	/// <summary>
+	/// アビリティのクールダウン残り時間を取得
+	/// </summary>
+	public float GetAbilityCooldownRemaining(string userId, string abilityName)
+	{
+		var playerState = GetPlayerStateByUserId(userId);
+		if (playerState != null)
+		{
+			return playerState.GetAbilityCooldownRemaining(abilityName);
+		}
+		Debug.LogWarning($"UserId {userId} のプレイヤーが見つかりません（GetAbilityCooldownRemaining）");
+		return 0f;
+	}
+
+	/// <summary>
+	/// アビリティのクールダウンをクリア
+	/// </summary>
+	public void ClearAbilityCooldown(string userId, string abilityName)
+	{
+		var playerState = GetPlayerStateByUserId(userId);
+		if (playerState != null)
+		{
+			playerState.ClearAbilityCooldown(abilityName);
+		}
+		else
+		{
+			Debug.LogWarning($"UserId {userId} のプレイヤーが見つかりません（ClearAbilityCooldown）");
+		}
+	}
+
 }
 

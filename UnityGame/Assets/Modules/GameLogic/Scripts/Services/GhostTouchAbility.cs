@@ -31,9 +31,6 @@ namespace UnityGame.Assets.Modules.GameLogic.Scripts.Services
         // プレイヤーごとのStunEffectキャッシュ
         private readonly Dictionary<string, StunEffect> _stunEffects = new Dictionary<string, StunEffect>();
 
-        // プレイヤーごとのクールダウン管理
-        private readonly Dictionary<string, float> _cooldownEndTimes = new Dictionary<string, float>();
-
         /// <summary>
         /// アビリティ名（IPlayerAbilityインターフェース実装）
         /// </summary>
@@ -52,20 +49,10 @@ namespace UnityGame.Assets.Modules.GameLogic.Scripts.Services
         /// </summary>
         public void OnPlayerMoved(PlayerMovedSignal signal)
         {
-            // クールダウン中は発動しない
-            if (IsOnCooldown(signal.UserId))
+            // クールダウン中は発動しない（PlayerManagerで自動的に期限切れチェック）
+            if (_playerManager.IsAbilityOnCooldown(signal.UserId, AbilityName))
             {
-                // クールダウン解除チェック
-                if (Time.time >= _cooldownEndTimes[signal.UserId])
-                {
-                    _cooldownEndTimes.Remove(signal.UserId);
-                    Debug.Log($"【GhostTouch】{signal.UserId} のクールダウン解除！再発動可能");
-                }
-                else
-                {
-                    // まだクールダウン中
-                    return;
-                }
+                return;
             }
 
             // 全プレイヤーをチェックして同じタイルにいる敵を探す
@@ -84,14 +71,6 @@ namespace UnityGame.Assets.Modules.GameLogic.Scripts.Services
                     TriggerGhostTouch(signal.UserId, targetPlayer.Info.UserId);
                 }
             }
-        }
-
-        /// <summary>
-        /// クールダウン中かチェック
-        /// </summary>
-        private bool IsOnCooldown(string userId)
-        {
-            return _cooldownEndTimes.ContainsKey(userId) && Time.time < _cooldownEndTimes[userId];
         }
 
         /// <summary>
@@ -150,8 +129,8 @@ namespace UnityGame.Assets.Modules.GameLogic.Scripts.Services
                 _playerManager.SetPlayerState(targetUserId, PlayerActionState.Idle);
             });
 
-            // アビリティ使用者のクールダウン開始
-            _cooldownEndTimes[attackerUserId] = Time.time + COOLDOWN_DURATION;
+            // アビリティ使用者のクールダウン開始（PlayerManagerで管理）
+            _playerManager.SetAbilityCooldown(attackerUserId, AbilityName, Time.time + COOLDOWN_DURATION);
         }
 
         /// <summary>
@@ -159,10 +138,7 @@ namespace UnityGame.Assets.Modules.GameLogic.Scripts.Services
         /// </summary>
         public float GetCooldownRemaining(string userId)
         {
-            if (!IsOnCooldown(userId))
-                return 0f;
-
-            return Mathf.Max(0f, _cooldownEndTimes[userId] - Time.time);
+            return _playerManager.GetAbilityCooldownRemaining(userId, AbilityName);
         }
 
         /// <summary>

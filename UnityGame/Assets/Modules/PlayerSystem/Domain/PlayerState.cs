@@ -1,4 +1,5 @@
 using UnityEngine;
+using System.Collections.Generic;
 
 /// <summary>プレイヤーの動的状態（位置・回転など）</summary>
 public class PlayerState
@@ -13,11 +14,15 @@ public class PlayerState
     /// <summary>状態が変わった時刻（Time.time）</summary>
     public float StateChangedTime { get; private set; }
 
+    /// <summary>アビリティのクールダウン終了時刻（アビリティ名 → 終了時刻）</summary>
+    public Dictionary<string, float> AbilityCooldowns { get; private set; }
+
     public PlayerState(PlayerInfoState info)
     {
         Info = info;
         State = PlayerActionState.Idle;
         StateChangedTime = Time.time;
+        AbilityCooldowns = new Dictionary<string, float>();
     }
 
     public void UpdateTransform(Vector3 position, Quaternion rotation)
@@ -44,6 +49,54 @@ public class PlayerState
     public float GetStateDuration()
     {
         return Time.time - StateChangedTime;
+    }
+
+    /// <summary>
+    /// アビリティのクールダウンを設定
+    /// </summary>
+    public void SetAbilityCooldown(string abilityName, float cooldownEndTime)
+    {
+        AbilityCooldowns[abilityName] = cooldownEndTime;
+    }
+
+    /// <summary>
+    /// アビリティがクールダウン中かチェック
+    /// </summary>
+    public bool IsAbilityOnCooldown(string abilityName)
+    {
+        if (!AbilityCooldowns.ContainsKey(abilityName))
+            return false;
+
+        if (Time.time >= AbilityCooldowns[abilityName])
+        {
+            // クールダウン終了したので削除
+            AbilityCooldowns.Remove(abilityName);
+            return false;
+        }
+
+        return true;
+    }
+
+    /// <summary>
+    /// アビリティのクールダウン残り時間を取得
+    /// </summary>
+    public float GetAbilityCooldownRemaining(string abilityName)
+    {
+        if (!IsAbilityOnCooldown(abilityName))
+            return 0f;
+
+        return Mathf.Max(0f, AbilityCooldowns[abilityName] - Time.time);
+    }
+
+    /// <summary>
+    /// アビリティのクールダウンをクリア
+    /// </summary>
+    public void ClearAbilityCooldown(string abilityName)
+    {
+        if (AbilityCooldowns.ContainsKey(abilityName))
+        {
+            AbilityCooldowns.Remove(abilityName);
+        }
     }
 }
 
