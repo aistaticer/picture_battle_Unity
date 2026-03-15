@@ -376,6 +376,13 @@ namespace picture_game_view.Assets.Modules.GameLogic.Scripts.Controllers
 				_displayTileState.HighlightMarker(_currentSelectedTileKey);
 
 				Debug.Log($"選択移動: {targetTileKey}, 残り移動可能距離: {_remainingMoveDistance}");
+
+				// 移動距離が満タンになったら自動的に確定
+				if (_remainingMoveDistance <= 0)
+				{
+					Debug.Log("移動距離が満タンになったため、自動確定します");
+					ConfirmSelection();
+				}
 			}
 			else
 			{
