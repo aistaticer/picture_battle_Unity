@@ -113,8 +113,8 @@ namespace UnityGame.Assets.Modules.GameLogic.Scripts.Controllers
 
             if (cooldownRemaining > 0)
             {
-                // クールダウン中 - 残り時間を割合で表示（15秒 → 0秒で1.0 → 0.0）
-                float fillAmount = cooldownRemaining / COOLDOWN_DURATION;
+                // クールダウン中 - 使用後に空から満タンへ向かって増加（15秒 → 0秒で0.0 → 1.0）
+                float fillAmount = 1.0f - (cooldownRemaining / COOLDOWN_DURATION);
                 _cooldownBarImage.fillAmount = fillAmount;
 
                 // 残り時間に応じて色を変更
