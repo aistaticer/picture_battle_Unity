@@ -44,6 +44,9 @@ public class GameLogicInstaller : MonoInstaller
         // AIController を ITickable としてバインド（敵の自動移動）
         Container.BindInterfacesAndSelfTo<AIController>().AsSingle();
 
+        // AbilityCooldownUI を ITickable としてバインド（クールダウンUI更新）
+        Container.BindInterfacesAndSelfTo<AbilityCooldownUI>().FromNewComponentOnNewGameObject().AsSingle();
+
         // PlayerManagerはPlayerSystemStartUpで動的に生成してバインドされる
     }
 }
