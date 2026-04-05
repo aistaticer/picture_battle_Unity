@@ -1,4 +1,5 @@
 using UnityEngine;
+using UnityEngine.UI;
 using Zenject;
 
 namespace UnityGame.Assets.Modules.GameLogic.Scripts.Controllers
@@ -10,10 +11,10 @@ namespace UnityGame.Assets.Modules.GameLogic.Scripts.Controllers
 		[SerializeField] private string _targetAbilityName;
 		[SerializeField] private float _cooldownDuration;
 
-		[Header("Plane Material")]
-		[SerializeField] private Renderer _planeRenderer;
+		[Header("UI Image")]
+		[SerializeField] private Image _image;
 
-		private Material _planeMaterial;
+		private Material _imageMaterial;
 		private PlayerManager _playerManager;
 
 		[Inject]
@@ -30,30 +31,31 @@ namespace UnityGame.Assets.Modules.GameLogic.Scripts.Controllers
 		}
 
 		private void Start()
-		{
-			if (_planeRenderer == null)
+		{	
+			if (_image == null)
 			{
-				GameObject plane = GameObject.Find("GhostTouchPlane");
-				if (plane != null)
-					_planeRenderer = plane.GetComponent<Renderer>();
+				string objectName = $"{_targetAbilityName}CoolDownTime";
+				GameObject obj = GameObject.Find(objectName);
+				if (obj != null)
+					_image = obj.GetComponent<Image>();
 			}
 
-			if (_planeRenderer != null)
-				_planeMaterial = _planeRenderer.material;
+			if (_image != null)
+				_imageMaterial = _image.material;
 			else
-				Debug.LogWarning("[AbilityCooldownUI] 'plane' オブジェクトが見つかりません。インスペクタで _planeRenderer を設定してください。");
+				Debug.LogWarning($"[AbilityCooldownUI] '{_targetAbilityName}CoolDownTime' の Image が見つかりません。インスペクタで _image を設定してください。");
 		}
 
 		public void Tick()
 		{
-			if (_planeMaterial == null) return;
+			if (_imageMaterial == null) return;
 
 			float cooldownRemaining = _playerManager.GetAbilityCooldownRemaining(_targetUserId, _targetAbilityName);
 			float percentage = cooldownRemaining > 0
 				? 1.0f - (cooldownRemaining / _cooldownDuration)
 				: 1.0f;
 
-			_planeMaterial.SetFloat("_percentage", percentage);
+			_imageMaterial.SetFloat("_percentage", percentage);
 		}
 	}
 }
