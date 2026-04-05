@@ -34,18 +34,34 @@ public class GameLogicInstaller : MonoInstaller
         // SelectionController を ITickable, IInitializable としてバインド
         Container.BindInterfacesAndSelfTo<SelectionController>().AsSingle();
 
-        // アビリティシステムのバインド
-        // GhostTouchAbilityをバインド（具象型 + IPlayerAbilityインターフェース）
-        Container.BindInterfacesAndSelfTo<GhostTouchAbility>().AsSingle();
+        // AbilityFactoryをバインド
+        Container.Bind<AbilityFactory>().AsSingle();
 
-        // AbilityManagerをバインド（全アビリティを統括管理）
+        // AbilitySetupService: プレイヤー生成後にアビリティを紐づける（IInitializable）
+        Container.BindInterfacesAndSelfTo<UnityGame.Assets.Modules.GameLogic.Scripts.Services.AbilitySetupService>().AsSingle();
+
+        // AbilityManagerをバインド（プレイヤーのアビリティに処理を委譲）
         Container.Bind<AbilityManager>().AsSingle();
 
         // AIController を ITickable としてバインド（敵の自動移動）
         Container.BindInterfacesAndSelfTo<AIController>().AsSingle();
 
         // AbilityCooldownUI を ITickable としてバインド（クールダウンUI更新）
-        Container.BindInterfacesAndSelfTo<AbilityCooldownUI>().FromNewComponentOnNewGameObject().AsSingle();
+        // GhostTouch用UI
+        Container.BindInterfacesTo<AbilityCooldownUI>()
+            .FromNewComponentOnNewGameObject()
+            .AsCached()
+            .OnInstantiated<AbilityCooldownUI>((ctx, ui) =>
+                ui.Initialize("player001", "GhostTouch", 5.0f))
+            .NonLazy();
+
+        // RoadBlock用UI
+        Container.BindInterfacesTo<AbilityCooldownUI>()
+            .FromNewComponentOnNewGameObject()
+            .AsCached()
+            .OnInstantiated<AbilityCooldownUI>((ctx, ui) =>
+                ui.Initialize("player001", "RoadBlock", 20.0f))
+            .NonLazy();
 
         // PlayerManagerはPlayerSystemStartUpで動的に生成してバインドされる
     }

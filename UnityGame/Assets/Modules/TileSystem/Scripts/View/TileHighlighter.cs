@@ -44,6 +44,7 @@ public class TileHighlighter : MonoBehaviour
 			case TileType.clickableTeamB: renderer.material = TileMatSet.clickableTeamBMat; break;
 			case TileType.clickedTeamA: renderer.material = TileMatSet.clickedTeamAMat; break;
 			case TileType.clickedTeamB: renderer.material = TileMatSet.clickedTeamBMat; break;
+			case TileType.Blocked: renderer.material = TileMatSet.blockedMat; break;
 		}
 	}
 }

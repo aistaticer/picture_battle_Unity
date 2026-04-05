@@ -5,7 +5,7 @@
     "userId": "player001",
     "modelType": "Ghost",
 		"position": { "x": 4, "y": 0, "z": 6 },
-    "abilities": ["GhostTouch"]
+    "abilities": ["GhostTouch", "RoadBlock"]
   },
   {
     "userName": "Bob",

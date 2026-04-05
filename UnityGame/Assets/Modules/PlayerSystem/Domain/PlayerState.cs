@@ -17,12 +17,28 @@ public class PlayerState
     /// <summary>アビリティのクールダウン終了時刻（アビリティ名 → 終了時刻）</summary>
     public Dictionary<string, float> AbilityCooldowns { get; private set; }
 
+    /// <summary>最後の移動方向（正規化済み）</summary>
+    public Vector3 LastMovementDirection { get; private set; } = Vector3.forward;
+
+    /// <summary>このプレイヤーに紐づくアビリティインスタンス</summary>
+    public List<IPlayerAbility> Abilities { get; private set; }
+
     public PlayerState(PlayerInfoState info)
     {
         Info = info;
         State = PlayerActionState.Idle;
         StateChangedTime = Time.time;
         AbilityCooldowns = new Dictionary<string, float>();
+        Abilities = new List<IPlayerAbility>();
+    }
+
+    /// <summary>
+    /// アビリティインスタンスを追加する
+    /// </summary>
+    public void AddAbility(IPlayerAbility ability)
+    {
+        if (ability != null)
+            Abilities.Add(ability);
     }
 
     public void UpdateTransform(Vector3 position, Quaternion rotation)
@@ -96,6 +112,17 @@ public class PlayerState
         if (AbilityCooldowns.ContainsKey(abilityName))
         {
             AbilityCooldowns.Remove(abilityName);
+        }
+    }
+
+    /// <summary>
+    /// 最後の移動方向を設定
+    /// </summary>
+    public void SetLastMovementDirection(Vector3 direction)
+    {
+        if (direction != Vector3.zero)
+        {
+            LastMovementDirection = direction.normalized;
         }
     }
 }

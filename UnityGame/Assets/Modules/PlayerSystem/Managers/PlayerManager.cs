@@ -213,6 +213,9 @@ public class PlayerManager
 						// PlayerStateの位置と回転を更新（最終位置で更新）
 						kvp.Key.UpdateTransform(targetPosition, kvp.Value.transform.rotation);
 
+						// 移動方向を記録
+						kvp.Key.SetLastMovementDirection(direction);
+
 						// PlayerInfoStateの位置を更新
 						Position newPosition = Position.FromVector3(targetPosition);
 						kvp.Key.Info.UpdatePosition(newPosition);

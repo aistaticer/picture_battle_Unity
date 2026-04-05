@@ -1,5 +1,4 @@
 using UnityEngine;
-using Zenject;
 using UnityGame.Assets.Modules.GameLogic.Scripts.Effects;
 using System.Collections.Generic;
 
@@ -23,24 +22,22 @@ namespace UnityGame.Assets.Modules.GameLogic.Scripts.Services
     {
         private readonly PlayerManager _playerManager;
         private readonly TileManager _tileManager;
+        private readonly string _ownerId;
 
         private const float STUN_DURATION = 2.0f;
         private const float SHAKE_INTENSITY = 0.1f;
-        private const float COOLDOWN_DURATION = 15.0f; // 15秒クールダウン
+        private const float COOLDOWN_DURATION = 5.0f;
 
-        // プレイヤーごとのStunEffectキャッシュ
         private readonly Dictionary<string, StunEffect> _stunEffects = new Dictionary<string, StunEffect>();
 
-        /// <summary>
-        /// アビリティ名（IPlayerAbilityインターフェース実装）
-        /// </summary>
         public string AbilityName => "GhostTouch";
+        public string OwnerId => _ownerId;
 
-        [Inject]
-        public GhostTouchAbility(PlayerManager playerManager, TileManager tileManager)
+        public GhostTouchAbility(PlayerManager playerManager, TileManager tileManager, string ownerId)
         {
             _playerManager = playerManager;
             _tileManager = tileManager;
+            _ownerId = ownerId;
         }
 
         /// <summary>

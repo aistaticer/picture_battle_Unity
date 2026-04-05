@@ -27,6 +27,11 @@ public class TileManager
 	/// </summary>
 	private HashSet<string> _clickableTiles = new HashSet<string>();
 
+	/// <summary>
+	/// ブロック中のタイル情報を保持（タイルキー → (解除時刻, 元のTileType)）
+	/// </summary>
+	private Dictionary<string, (float unblockTime, TileType originalType)> _blockedTiles = new Dictionary<string, (float, TileType)>();
+
 
 
 	/// <summary>
@@ -231,5 +236,64 @@ public class TileManager
 	public bool IsClickable(string tileKey)
 	{
 		return _clickableTiles.Contains(tileKey);
+	}
+
+	// ========== ブロックタイル管理 ==========
+
+	/// <summary>
+	/// タイルをブロック状態にする
+	/// </summary>
+	/// <param name="tileKey">ブロックするタイルのキー</param>
+	/// <param name="unblockTime">ブロック解除時刻（Time.time基準）</param>
+	public void BlockTile(string tileKey, float unblockTime)
+	{
+		var tileData = GetTileData(tileKey);
+		if (tileData == null) return;
+
+		// 元のTypeを保存
+		if (!_blockedTiles.ContainsKey(tileKey))
+		{
+			_blockedTiles[tileKey] = (unblockTime, tileData.Type);
+		}
+		else
+		{
+			// 既にブロック中の場合は解除時刻のみ更新
+			var (_, originalType) = _blockedTiles[tileKey];
+			_blockedTiles[tileKey] = (unblockTime, originalType);
+		}
+
+		ChangesetColor(tileKey, TileType.Blocked);
+	}
+
+	/// <summary>
+	/// タイルがブロック中かチェック（期限切れなら自動復元）
+	/// </summary>
+	/// <param name="tileKey">チェックするタイルのキー</param>
+	/// <returns>ブロック中ならtrue</returns>
+	public bool IsTileBlocked(string tileKey)
+	{
+		if (_blockedTiles.TryGetValue(tileKey, out var blockInfo))
+		{
+			if (UnityEngine.Time.time >= blockInfo.unblockTime)
+			{
+				UnblockTile(tileKey);
+				return false;
+			}
+			return true;
+		}
+		return false;
+	}
+
+	/// <summary>
+	/// ブロックを解除して元の色に戻す
+	/// </summary>
+	/// <param name="tileKey">解除するタイルのキー</param>
+	private void UnblockTile(string tileKey)
+	{
+		if (_blockedTiles.TryGetValue(tileKey, out var blockInfo))
+		{
+			_blockedTiles.Remove(tileKey);
+			ChangesetColor(tileKey, blockInfo.originalType);
+		}
 	}
 }
