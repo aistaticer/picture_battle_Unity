@@ -495,7 +495,7 @@ namespace picture_game_view.Assets.Modules.GameLogic.Scripts.Controllers
 					_tileManager.ChangesetColor(tileKey, tileType);
 				}
 
-				Debug.Log($"選択決定: {_currentSelectedTileKey} ({_gameStateController.GetCurrentPlayerName()}), 訪問したタイル数: {_visitedTiles.Count}");
+				// Debug.Log($"選択決定: {_currentSelectedTileKey} ({_gameStateController.GetCurrentPlayerName()}), 訪問したタイル数: {_visitedTiles.Count}");
 
 				// 移動を確定（GameStateControllerで状態もIdleに戻る）
 				_gameStateController.ConfirmMove();

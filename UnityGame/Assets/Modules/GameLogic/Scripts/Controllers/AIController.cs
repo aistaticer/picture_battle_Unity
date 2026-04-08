@@ -135,7 +135,7 @@ namespace picture_game_view.Assets.Modules.GameLogic.Scripts.Controllers
 				// 移動完了
 				_isExecutingMove = false;
 				_currentPath = null;
-				Debug.Log("AI移動完了");
+				// Debug.Log("AI移動完了");
 				return;
 			}
 
@@ -170,7 +170,7 @@ namespace picture_game_view.Assets.Modules.GameLogic.Scripts.Controllers
 			_tileManager.SetTileOwner(nextTile.Key, AI_PLAYER_ID);
 			_tileManager.ChangesetColor(nextTile.Key, TileType.clickedTeamB);
 
-			Debug.Log($"AI移動: {nextTile.Key}");
+			// Debug.Log($"AI移動: {nextTile.Key}");
 
 			// 次のインデックスに進む
 			_currentPathIndex++;
